@@ -1,1 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemental Marketing Campaign | Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Space - Warm Neutrals & Deep Slate -->
+    <!-- Application Structure Plan: 
+         1. Hero/Mission Briefing: Sets the "Scenario" context immediately.
+         2. Interactive Workflow (Tabs): Breaks down the 3 main deliverables (Paper, Visual, Pitch) into digestible tabs to prevent information overload.
+         3. Target Elements (Filterable Grid): Allows students to explore the available elements by category (Tech, Life, Danger, Flashy) to help them choose.
+         4. Success Metrics (Interactive Rubric): A dynamic calculator where students can check off requirements to see their potential grade, reinforcing the grading criteria.
+         5. Visual breakdown of points using Chart.js to emphasize where effort should be focused.
+    -->
+    <!-- Visualization & Content Choices:
+         - Doughnut Chart: Visualizes the point breakdown (20/15/10/5) to show students where the "weight" of the grade lies. Goal: Inform/Prioritize.
+         - Interactive Checklist: Transforms the static rubric into an active "Grade Calculator". Goal: Engagement/Self-Correction.
+         - Filterable Element Grid: Uses JS to filter DOM elements based on categories. Goal: Exploration/Organization.
+         - Accordion/Tabs: Hides detailed requirements until needed to maintain a clean UI. Goal: Usability.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        .tab-active {
+            border-bottom: 3px solid #f97316; /* Orange-500 */
+            color: #ea580c; /* Orange-600 */
+            font-weight: 700;
+        }
+        .tab-inactive {
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+        }
+        .element-card {
+            transition: all 0.3s ease;
+        }
+        .element-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-slate-800">⚛️ Elemental<span class="text-orange-600">Lobby</span></span>
+                </div>
+                <div class="hidden sm:flex space-x-8 items-center">
+                    <a href="#mission" class="text-slate-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium">Mission</a>
+                    <a href="#deliverables" class="text-slate-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium">Deliverables</a>
+                    <a href="#elements" class="text-slate-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium">Targets</a>
+                    <a href="#rubric" class="text-slate-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium">Rubric</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section: The Mission -->
+    <section id="mission" class="bg-slate-900 text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">The Universe is Downsizing.</h1>
+            <p class="text-xl text-slate-300 mb-8">
+                Budget cuts are hitting the Periodic Table. We need you to save an element from elimination.
+            </p>
+            <div class="bg-slate-800 p-6 rounded-lg shadow-xl border border-slate-700 text-left max-w-2xl mx-auto relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl font-serif">?</div>
+                <h3 class="text-orange-400 font-bold uppercase tracking-wider text-sm mb-2">Incoming Transmission</h3>
+                <p class="mb-4"><strong>Role:</strong> Element Lobbyist</p>
+                <p class="mb-4"><strong>Objective:</strong> Prove to the "Universal Board of Directors" (your class) that your chosen element is essential to life, industry, or the future.</p>
+                <p><strong>Total Bounty:</strong> 50 Points</p>
+            </div>
+            <div class="mt-8">
+                <button onclick="document.getElementById('deliverables').scrollIntoView({behavior: 'smooth'})" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full transition duration-300">
+                    Accept Mission
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow bg-slate-50">
+        
+        <!-- Deliverables Section (Tabs) -->
+        <section id="deliverables" class="max-w-7xl mx-auto px-4 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">Mission Deliverables</h2>
+                <p class="text-slate-600 mt-2">There are three phases to your campaign. Click to explore requirements.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex flex-wrap justify-center border-b border-slate-200 mb-8">
+                <button onclick="switchTab('research')" id="tab-research" class="tab-active px-6 py-3 text-lg focus:outline-none transition-colors">Phase 1: Research</button>
+                <button onclick="switchTab('visual')" id="tab-visual" class="tab-inactive px-6 py-3 text-lg focus:outline-none transition-colors">Phase 2: Visual Ad</button>
+                <button onclick="switchTab('pitch')" id="tab-pitch" class="tab-inactive px-6 py-3 text-lg focus:outline-none transition-colors">Phase 3: The Pitch</button>
+            </div>
+
+            <!-- Phase 1: Research Content -->
+            <div id="content-research" class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">20 Points</span>
+                        The Executive Summary
+                    </h3>
+                    <p class="text-slate-600 mb-6">Before you can sell it, you have to understand it. You will write a formal research report covering four key sections.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-lg border-l-4 border-blue-500">
+                            <h4 class="font-bold text-slate-700">Section A: The ID Card</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li>Name, Symbol, Atomic #</li>
+                                <li>Average Atomic Mass</li>
+                                <li>Proton, Neutron, Electron count</li>
+                                <li>Electron Config & Location (Group/Period)</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg border-l-4 border-indigo-500">
+                            <h4 class="font-bold text-slate-700">Section B: Personality Profile</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li>Physical: State, density, melting point, color</li>
+                                <li>Chemical: Reactivity, electronegativity</li>
+                                <li>Isotopes: Major ones & radioactivity</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="space-y-4 mt-2">
+                        <div class="p-4 bg-slate-50 rounded-lg border-l-4 border-purple-500">
+                            <h4 class="font-bold text-slate-700">Section C: The Resume (Uses)</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>History:</strong> Who discovered it and when?</li>
+                                <li><strong>3 Distinct Uses:</strong> Medicine, Tech, etc.</li>
+                                <li class="text-orange-600 font-semibold italic">Constraint: Explain WHY it is used chemically.</li>
+                                <li><strong>Biology:</strong> Essential or Toxic?</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg border-l-4 border-pink-500">
+                            <h4 class="font-bold text-slate-700">Section D: The Fun Factor</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li>3 "Weird" or obscure facts.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 p-4 bg-yellow-50 rounded text-yellow-800 text-sm">
+                            <strong>💡 Pro Tip:</strong> Don't just list facts. Connect the atomic structure to the uses!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Visual Content (Hidden by default) -->
+            <div id="content-visual" class="hidden grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                        <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">15 Points</span>
+                        The Ad Campaign
+                    </h3>
+                    <p class="text-slate-600 mb-6">Make it look cool. Create a single-page infographic or a movie poster.</p>
+                    <h4 class="font-bold text-slate-700 mb-2">Recommended Tools:</h4>
+                    <div class="flex space-x-2 mb-6">
+                        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">Canva</span>
+                        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">Piktochart</span>
+                        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">Google Slides</span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center">
+                    <h4 class="font-bold text-slate-700 mb-4">Design Requirements checklist:</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-slate-600">
+                            <span class="text-green-500 mr-2">✓</span> Feature Element Symbol clearly
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="text-green-500 mr-2">✓</span> Catchy Slogan (e.g., "Oxygen: You literally can't live without it")
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="text-green-500 mr-2">✓</span> <strong>Visualize the Data:</strong> Show, don't just tell.
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <span class="text-green-500 mr-2">✓</span> Colorful & Professional
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 3: Pitch Content (Hidden by default) -->
+            <div id="content-pitch" class="hidden grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                     <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                        <span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">10 Points</span>
+                        The Sales Pitch
+                    </h3>
+                    <p class="text-slate-600 mb-4">Close the deal. You have 3-5 minutes.</p>
+                    <div class="p-4 border border-red-100 bg-red-50 rounded-lg">
+                        <h4 class="font-bold text-red-800 mb-2">CRITICAL RULE:</h4>
+                        <p class="text-red-700 text-sm">Do NOT read off your slides or paper. You must speak to the audience.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                     <h4 class="font-bold text-slate-700 mb-4">Presentation Strategy:</h4>
+                     <ul class="space-y-4">
+                        <li class="flex">
+                            <span class="bg-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-1">1</span>
+                            <div>
+                                <strong class="block text-slate-800">The Hook</strong>
+                                <span class="text-slate-600 text-sm">Start with a story or a shocking statistic. Grab attention immediately.</span>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <span class="bg-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-1">2</span>
+                            <div>
+                                <strong class="block text-slate-800">Tone</strong>
+                                <span class="text-slate-600 text-sm">Enthusiastic and persuasive. You are a lobbyist, not a robot.</span>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <span class="bg-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-1">3</span>
+                            <div>
+                                <strong class="block text-slate-800">Interaction</strong>
+                                <span class="text-slate-600 text-sm">Ask a trivia question or show a short video clip/demo.</span>
+                            </div>
+                        </li>
+                     </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Element Selection Section -->
+        <section id="elements" class="bg-white py-16 border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-800">Target Elements</h2>
+                    <p class="text-slate-600 mt-2">Choose your client. First come, first served.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap justify-center gap-4 mb-10">
+                    <button onclick="filterElements('all')" class="filter-btn px-4 py-2 rounded-full bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 shadow-md">All Targets</button>
+                    <button onclick="filterElements('tech')" class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium hover:bg-blue-200">Tech Heavyweights</button>
+                    <button onclick="filterElements('life')" class="filter-btn px-4 py-2 rounded-full bg-green-100 text-green-800 text-sm font-medium hover:bg-green-200">Life Givers</button>
+                    <button onclick="filterElements('danger')" class="filter-btn px-4 py-2 rounded-full bg-red-100 text-red-800 text-sm font-medium hover:bg-red-200">The Danger Zone</button>
+                    <button onclick="filterElements('flashy')" class="filter-btn px-4 py-2 rounded-full bg-purple-100 text-purple-800 text-sm font-medium hover:bg-purple-200">The Flashy Ones</button>
+                </div>
+
+                <!-- Grid -->
+                <div id="element-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Tech -->
+                    <div class="element-card tech p-6 rounded-lg bg-blue-50 border border-blue-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-blue-900">Si</h3>
+                            <span class="text-xs font-bold text-blue-500 uppercase">Tech</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Silicon</h4>
+                        <p class="text-sm text-slate-600 mt-2">The brain of the computer. Essential for all modern electronics.</p>
+                    </div>
+                    <div class="element-card tech p-6 rounded-lg bg-blue-50 border border-blue-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-blue-900">Li</h3>
+                            <span class="text-xs font-bold text-blue-500 uppercase">Tech</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Lithium</h4>
+                        <p class="text-sm text-slate-600 mt-2">Powering the future. The heart of battery technology.</p>
+                    </div>
+                     <div class="element-card tech p-6 rounded-lg bg-blue-50 border border-blue-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-blue-900">Co</h3>
+                            <span class="text-xs font-bold text-blue-500 uppercase">Tech</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Cobalt</h4>
+                        <p class="text-sm text-slate-600 mt-2">The controversial magnet. Critical for stability in batteries.</p>
+                    </div>
+                     <div class="element-card tech p-6 rounded-lg bg-blue-50 border border-blue-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-blue-900">Nd</h3>
+                            <span class="text-xs font-bold text-blue-500 uppercase">Tech</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Neodymium</h4>
+                        <p class="text-sm text-slate-600 mt-2">Super magnets used in motors, speakers, and hard drives.</p>
+                    </div>
+
+                    <!-- Life -->
+                    <div class="element-card life p-6 rounded-lg bg-green-50 border border-green-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-green-900">C</h3>
+                            <span class="text-xs font-bold text-green-500 uppercase">Life</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Carbon</h4>
+                        <p class="text-sm text-slate-600 mt-2">The backbone of life. Organic chemistry starts here.</p>
+                    </div>
+                    <div class="element-card life p-6 rounded-lg bg-green-50 border border-green-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-green-900">N</h3>
+                            <span class="text-xs font-bold text-green-500 uppercase">Life</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Nitrogen</h4>
+                        <p class="text-sm text-slate-600 mt-2">Essential for DNA and growth. A key component of air.</p>
+                    </div>
+                    <div class="element-card life p-6 rounded-lg bg-green-50 border border-green-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-green-900">Fe</h3>
+                            <span class="text-xs font-bold text-green-500 uppercase">Life</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Iron</h4>
+                        <p class="text-sm text-slate-600 mt-2">Blood and steel. Carries oxygen in blood, builds skyscrapers.</p>
+                    </div>
+                    <div class="element-card life p-6 rounded-lg bg-green-50 border border-green-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-green-900">Ca</h3>
+                            <span class="text-xs font-bold text-green-500 uppercase">Life</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Calcium</h4>
+                        <p class="text-sm text-slate-600 mt-2">Bones and concrete. Structure for bodies and buildings.</p>
+                    </div>
+
+                    <!-- Danger -->
+                    <div class="element-card danger p-6 rounded-lg bg-red-50 border border-red-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-red-900">U</h3>
+                            <span class="text-xs font-bold text-red-500 uppercase">Danger</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Uranium</h4>
+                        <p class="text-sm text-slate-600 mt-2">Power and destruction. Nuclear energy and weaponry.</p>
+                    </div>
+                     <div class="element-card danger p-6 rounded-lg bg-red-50 border border-red-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-red-900">Pb</h3>
+                            <span class="text-xs font-bold text-red-500 uppercase">Danger</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Lead</h4>
+                        <p class="text-sm text-slate-600 mt-2">The heavy poison. Dense shielding, but toxic to humans.</p>
+                    </div>
+                     <div class="element-card danger p-6 rounded-lg bg-red-50 border border-red-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-red-900">Hg</h3>
+                            <span class="text-xs font-bold text-red-500 uppercase">Danger</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Mercury</h4>
+                        <p class="text-sm text-slate-600 mt-2">The liquid metal. Unique properties, highly toxic history.</p>
+                    </div>
+                     <div class="element-card danger p-6 rounded-lg bg-red-50 border border-red-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-red-900">Cl</h3>
+                            <span class="text-xs font-bold text-red-500 uppercase">Danger</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Chlorine</h4>
+                        <p class="text-sm text-slate-600 mt-2">Deadly gas / Clean pools. A war gas that also sanitizes water.</p>
+                    </div>
+
+                    <!-- Flashy -->
+                    <div class="element-card flashy p-6 rounded-lg bg-purple-50 border border-purple-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-purple-900">Ne</h3>
+                            <span class="text-xs font-bold text-purple-500 uppercase">Flashy</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Neon</h4>
+                        <p class="text-sm text-slate-600 mt-2">Lights. Inert gas used for distinctive glowing signage.</p>
+                    </div>
+                    <div class="element-card flashy p-6 rounded-lg bg-purple-50 border border-purple-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-purple-900">Ti</h3>
+                            <span class="text-xs font-bold text-purple-500 uppercase">Flashy</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Titanium</h4>
+                        <p class="text-sm text-slate-600 mt-2">Aerospace strength. Incredibly strong, lightweight, and shiny.</p>
+                    </div>
+                    <div class="element-card flashy p-6 rounded-lg bg-purple-50 border border-purple-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-purple-900">Ag</h3>
+                            <span class="text-xs font-bold text-purple-500 uppercase">Flashy</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Silver</h4>
+                        <p class="text-sm text-slate-600 mt-2">Conductive and antibacterial. Best electrical conductor.</p>
+                    </div>
+                    <div class="element-card flashy p-6 rounded-lg bg-purple-50 border border-purple-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-purple-900">W</h3>
+                            <span class="text-xs font-bold text-purple-500 uppercase">Flashy</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800">Tungsten</h4>
+                        <p class="text-sm text-slate-600 mt-2">The heat resister. Highest melting point of all elements.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Rubric & Calculator Section -->
+        <section id="rubric" class="py-16 bg-slate-100">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    
+                    <!-- Left: Grading Breakdown Chart -->
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Point Distribution</h2>
+                        <p class="text-slate-600 mb-8">This project is worth 50 points total. Use the chart to understand where to focus your efforts. Research is the biggest chunk!</p>
+                        
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                            <!-- Responsive Chart Container -->
+                            <div class="chart-container">
+                                <canvas id="gradeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Interactive Grade Calculator -->
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Grade Estimator</h2>
+                        <p class="text-slate-600 mb-6">Check off items as you complete them to estimate your grade.</p>
+                        
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+                            <div class="mb-6">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-slate-700">Estimated Score</span>
+                                    <span id="score-display" class="text-sm font-bold text-orange-600">0 / 50</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-4">
+                                    <div id="progress-bar" class="bg-orange-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3 h-96 overflow-y-auto pr-2 custom-scrollbar">
+                                <!-- Research Items -->
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-blue-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Research:</strong> All 4 Sections Complete (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-blue-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Research:</strong> Deep detail on uses (Not generic) (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-blue-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Research:</strong> Accurate Chemistry (Config, Ions, etc) (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-blue-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Research:</strong> No missing sections (5 pts)</span>
+                                </label>
+
+                                <!-- Visual Items -->
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-green-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Visual:</strong> Professional Quality & Creative (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-green-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Visual:</strong> Contains Symbol & Slogan (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-green-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Visual:</strong> Excellent Data Visualization (5 pts)</span>
+                                </label>
+
+                                <!-- Pitch Items -->
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-red-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Pitch:</strong> Engaging, eye contact (No reading!) (5 pts)</span>
+                                </label>
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-red-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Pitch:</strong> Clear voice, sold the element (5 pts)</span>
+                                </label>
+
+                                <!-- Citation Items -->
+                                <label class="flex items-start space-x-3 p-3 rounded hover:bg-slate-50 cursor-pointer">
+                                    <input type="checkbox" class="rubric-check form-checkbox h-5 w-5 text-slate-600 mt-1" data-points="5" onchange="calculateScore()">
+                                    <span class="text-sm text-slate-700"><strong>Citations:</strong> 3+ Reputable Sources (MLA/APA) (5 pts)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center">
+        <p class="mb-2">Chemistry 10 | The Elemental Marketing Campaign</p>
+        <p class="text-sm">Don't be inert. Be noble.</p>
+    </footer>
+
+    <script>
+        // --- Tab Logic ---
+        function switchTab(tabName) {
+            // Hide all content
+            document.getElementById('content-research').classList.add('hidden');
+            document.getElementById('content-visual').classList.add('hidden');
+            document.getElementById('content-pitch').classList.add('hidden');
+            
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('content-' + tabName).classList.add('grid'); // Restore grid layout
+
+            // Reset tab styles
+            const tabs = ['research', 'visual', 'pitch'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+
+            // Set active tab style
+            const activeBtn = document.getElementById('tab-' + tabName);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+        }
+
+        // --- Filter Logic ---
+        function filterElements(category) {
+            const cards = document.querySelectorAll('.element-card');
+            
+            cards.forEach(card => {
+                if (category === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    if (card.classList.contains(category)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Update button styles
+            // Note: In a larger app, we'd toggle classes on the buttons themselves 
+            // to show active state, but for simplicity we'll just filter.
+        }
+
+        // --- Grade Calculator Logic ---
+        function calculateScore() {
+            const checkboxes = document.querySelectorAll('.rubric-check');
+            let total = 0;
+            
+            checkboxes.forEach(box => {
+                if (box.checked) {
+                    total += parseInt(box.getAttribute('data-points'));
+                }
+            });
+
+            // Cap at 50 just in case logic drifts, though here it matches exactly
+            if (total > 50) total = 50;
+
+            // Update Display
+            document.getElementById('score-display').innerText = `${total} / 50`;
+            
+            // Update Progress Bar Width and Color based on score
+            const bar = document.getElementById('progress-bar');
+            bar.style.width = `${(total / 50) * 100}%`;
+            
+            if (total < 30) {
+                bar.classList.remove('bg-yellow-500', 'bg-green-500');
+                bar.classList.add('bg-red-500');
+            } else if (total < 45) {
+                bar.classList.remove('bg-red-500', 'bg-green-500');
+                bar.classList.add('bg-yellow-500');
+            } else {
+                bar.classList.remove('bg-red-500', 'bg-yellow-500');
+                bar.classList.add('bg-green-500');
+            }
+        }
+
+        // --- Chart.js Initialization ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Research Paper', 'Visual Ad', 'Sales Pitch', 'Citations'],
+                    datasets: [{
+                        label: 'Points',
+                        data: [20, 15, 10, 5],
+                        backgroundColor: [
+                            '#3b82f6', // Blue-500
+                            '#22c55e', // Green-500
+                            '#ef4444', // Red-500
+                            '#94a3b8'  // Slate-400
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    family: "'Inter', sans-serif"
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Point Breakdown (Total: 50)',
+                            font: {
+                                size: 16,
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <style>
+        /* Animation Utility */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        /* Custom Scrollbar for checklist */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</body>
+</html>
 
