@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mendeleev's Mission | Interactive Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Lab Coat White, Blueprint Blue, & Warning Orange -->
+    <!-- Application Structure Plan: 
+         1. Hero/Header: Title and utility toolbar (Reset, Check Work, Visualization Modes).
+         2. Main Workspace (Split View):
+            - Left: The "Unknowns Deck" (Scrollable list of unplaced elements).
+            - Right: The "Mendeleev Grid" (Drop zone table for Representative Elements).
+         3. Clues Panel: Collapsible sidebar containing the specific logic rules from the PDF.
+         4. Analysis Tab: Digital version of the worksheet questions.
+    -->
+    <!-- Visualization & Content Choices:
+         - Drag & Drop API: Native HTML5 DnD for the core interaction.
+         - Heatmap Overlay: JS logic to color-code placed blocks based on numerical values (Radius/MP) to visualize trends dynamically.
+         - Input Fields: Embedded in placed blocks to allow students to "fill in the missing info" (Symbol, Atomic #) as per instructions.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .element-card {
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .element-card:active { cursor: grabbing; transform: scale(1.02); }
+        .element-card.placed {
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .drop-zone {
+            transition: background-color 0.2s;
+        }
+        .drop-zone.drag-over {
+            background-color: #dbeafe; /* blue-100 */
+            border: 2px dashed #3b82f6;
+        }
+        
+        /* Heatmap Scales */
+        .heat-low { background-color: #e0f2fe; color: #0c4a6e; }
+        .heat-med { background-color: #7dd3fc; color: #0c4a6e; }
+        .heat-high { background-color: #0284c7; color: white; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-md z-20 flex-none">
+        <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="text-2xl">🧩</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Mendeleev's Mission</h1>
+                    <p class="text-xs text-slate-400">Interactive Periodic Trends Lab</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- View Toggles -->
+                <div class="bg-slate-800 rounded-lg p-1 flex text-xs font-medium">
+                    <button onclick="setView('lab')" id="btn-view-lab" class="px-3 py-1.5 rounded bg-blue-600 text-white shadow transition">Lab Bench</button>
+                    <button onclick="setView('analysis')" id="btn-view-analysis" class="px-3 py-1.5 rounded hover:bg-slate-700 text-slate-300 transition">Analysis Questions</button>
+                </div>
+
+                <div class="h-6 w-px bg-slate-700 mx-2"></div>
+
+                <!-- Tools -->
+                <button onclick="toggleHeatmap('radius')" class="text-xs flex items-center px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 transition">
+                    <span class="mr-2">📏</span> Radius Heatmap
+                </button>
+                <button onclick="checkPlacement()" class="text-xs flex items-center px-3 py-2 bg-green-700 hover:bg-green-600 rounded shadow transition font-bold">
+                    <span class="mr-2">✓</span> Verify Placement
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex overflow-hidden relative">
+        
+        <!-- VIEW: LAB BENCH -->
+        <div id="view-lab" class="flex-grow flex w-full h-full">
+            
+            <!-- Left: Element Deck -->
+            <div class="w-64 bg-slate-100 border-r border-slate-200 flex flex-col flex-none z-10">
+                <div class="p-4 bg-white border-b border-slate-200 shadow-sm">
+                    <h2 class="font-bold text-slate-700 text-sm flex justify-between items-center">
+                        Unplaced Elements
+                        <span id="deck-count" class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs">26</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Drag these to the grid.</p>
+                </div>
+                <div id="element-deck" class="flex-grow overflow-y-auto p-3 space-y-3">
+                    <!-- Cards injected via JS -->
+                </div>
+            </div>
+
+            <!-- Center: The Grid -->
+            <div class="flex-grow bg-slate-50 overflow-auto p-6 flex flex-col items-center justify-start">
+                
+                <div class="mb-4 w-full max-w-5xl flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-slate-800">Periodic Table of Representative Elements</h2>
+                    <div class="text-sm text-slate-500 italic">Groups 1, 2, and 13-18</div>
+                </div>
+
+                <!-- The Periodic Table Grid -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border border-slate-300 overflow-visible">
+                    <div class="grid grid-cols-8 gap-1 mb-1 text-center font-bold text-slate-400 text-xs">
+                        <div>IA (1)</div>
+                        <div>IIA (2)</div>
+                        <div>IIIA (13)</div>
+                        <div>IVA (14)</div>
+                        <div>VA (15)</div>
+                        <div>VIA (16)</div>
+                        <div>VIIA (17)</div>
+                        <div>VIIIA (18)</div>
+                    </div>
+                    
+                    <!-- Rows generated by JS -->
+                    <div id="ptable-grid" class="flex flex-col gap-1">
+                        <!-- Grid rows go here -->
+                    </div>
+                </div>
+
+                <!-- Legend / Status -->
+                <div class="mt-8 w-full max-w-4xl grid grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-3 rounded border border-blue-100 text-xs text-blue-800">
+                        <strong>Tip:</strong> Click a placed card to enter its real Symbol and Atomic #.
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded border border-orange-100 text-xs text-orange-800">
+                        <strong>Trend Hint:</strong> Atomic Radius generally <em>increases</em> as you go down a group and <em>decreases</em> left-to-right.
+                    </div>
+                    <div id="status-msg" class="bg-white p-3 rounded border border-slate-200 text-xs text-slate-500 text-center">
+                        Lab Status: In Progress...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Clues & Data -->
+            <div class="w-72 bg-white border-l border-slate-200 flex flex-col flex-none shadow-xl z-10">
+                <div class="p-4 bg-slate-800 text-white">
+                    <h2 class="font-bold text-sm">🕵️ Mission Clues</h2>
+                </div>
+                <div class="flex-grow overflow-y-auto p-4 space-y-6">
+                    
+                    <!-- Groupings -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">1. The Groupings</h3>
+                        <div class="bg-slate-50 p-3 rounded text-sm font-mono text-slate-700 border border-slate-200">
+                            <ul class="space-y-1">
+                                <li>• Z R D</li>
+                                <li>• Q K A</li>
+                                <li>• P S I F</li>
+                                <li>• W O V</li>
+                                <li>• J X B E</li>
+                                <li>• G U N</li>
+                                <li>• L H T</li>
+                                <li>• Y M C</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Specific Clues -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">2. Identity Clues</h3>
+                        <div class="space-y-2 text-sm text-slate-700">
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>U</strong> has a total of 6 electrons.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>S</strong> is an alkali metal.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>E</strong> is a noble gas.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>K</strong> has 34 protons.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>C</strong> has 5 valence electrons.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>L</strong> is an alkaline earth metal (Mass ~40).
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>O</strong> is a halogen.
+                            </div>
+                            <div class="p-2 bg-yellow-50 border-l-2 border-yellow-400">
+                                <strong>R</strong> outer config is s²p¹.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: ANALYSIS -->
+        <div id="view-analysis" class="hidden flex-grow bg-slate-50 overflow-auto p-8 justify-center">
+            <div class="max-w-3xl w-full bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 pb-4 border-b border-slate-100">Lab Analysis Report</h2>
+                
+                <form id="analysis-form" class="space-y-8">
+                    
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">1. Atomic Radius Trends</label>
+                        <p class="text-sm text-slate-500 mb-3">Describe BOTH the periodic (left-to-right) and group (top-to-bottom) trends for atomic radius based on your completed table.</p>
+                        <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Radius increases/decreases when..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">2. Density Trends</label>
+                        <p class="text-sm text-slate-500 mb-3">Describe the trends for density on your completed table. Are they consistent?</p>
+                        <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">3. Melting Point Trends</label>
+                        <p class="text-sm text-slate-500 mb-3">Describe the trends for melting point. Does it peak in a specific group?</p>
+                        <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">4. Placement Strategy</label>
+                        <p class="text-sm text-slate-500 mb-3">Explain how the trends in properties (like Radius) were helpful in placing the last 16 blocks (the ones with asterisks) where you had less specific clues.</p>
+                        <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
+                        <button type="button" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition">Save Report</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for Element Editing -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-96 max-w-full m-4">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Identify Element <span id="modal-code" class="text-blue-600"></span></h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Atomic Number</label>
+                    <input type="number" id="input-atomic-num" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="e.g. 6">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Symbol</label>
+                    <input type="text" id="input-symbol" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="e.g. C">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Oxidation States</label>
+                    <input type="text" id="input-oxi" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="e.g. +4, -4">
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded text-sm">Cancel</button>
+                <button onclick="saveCardDetails()" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded text-sm font-bold">Save Identity</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- DATA & STATE ---
+        
+        // Data derived from PDF snippets + logic mapping
+        // Groups: 
+        // 1: PSIF (Radius: F<I<S<P) -> F(H), I(Li), S(Na), P(K)
+        // 2: LHT (L=Ca, H=Mg, T=Be) -> T, H, L
+        // 13: ZRD (Radius: R<D<Z) -> R(B), D(Al), Z(Ga)
+        // 14: GUN (U=C, G=Si, N=Ge) -> U, G, N
+        // 15: YMC (C=N, Y=P, M=As) -> C, Y, M
+        // 16: QKA (A=O, Q=S, K=Se) -> A, Q, K
+        // 17: WOV (O=F, W=Cl, V=Br) -> O, W, V
+        // 18: JXBE (E=He, B=Ne, X=Ar, J=Kr) -> E, B, X, J (Wait, E is Noble Gas. Order by radius.)
+        // E (He? Radius small), B, X, J. 
+
+        const elementsData = [
+            // Group 1 (Alkali)
+            { code: 'F', radius: 0.053, density: 0.00009, mp: -259, phase: 'gas', group: 0, row: 0 }, // H
+            { code: 'I', radius: 0.157, density: 0.534, mp: 180, phase: 'solid', group: 0, row: 1 },  // Li
+            { code: 'S', radius: 0.191, density: 0.97, mp: 98, phase: 'solid', group: 0, row: 2 },   // Na
+            { code: 'P', radius: 0.227, density: 0.86, mp: 64, phase: 'solid', group: 0, row: 3 },   // K
+
+            // Group 2 (Alkaline Earth)
+            { code: 'T', radius: 0.112, density: 1.85, mp: 1278, phase: 'solid', group: 1, row: 1 }, // Be
+            { code: 'H', radius: 0.160, density: 1.74, mp: 650, phase: 'solid', group: 1, row: 2 },  // Mg
+            { code: 'L', radius: 0.197, density: 1.55, mp: 839, phase: 'solid', group: 1, row: 3 },  // Ca
+
+            // Group 13
+            { code: 'R', radius: 0.085, density: 2.34, mp: 2076, phase: 'solid', group: 2, row: 1 }, // B
+            { code: 'D', radius: 0.143, density: 2.70, mp: 660, phase: 'solid', group: 2, row: 2 },  // Al
+            { code: 'Z', radius: 0.122, density: 5.90, mp: 29.8, phase: 'solid', group: 2, row: 3 }, // Ga (Typo in PDF snippet? Ga radius < Al usually, but app follows snippets)
+
+            // Group 14
+            { code: 'U', radius: 0.077, density: 2.26, mp: 3550, phase: 'solid', group: 3, row: 1 }, // C
+            { code: 'G', radius: 0.118, density: 2.33, mp: 1410, phase: 'solid', group: 3, row: 2 }, // Si
+            { code: 'N', radius: 0.122, density: 5.32, mp: 937, phase: 'solid', group: 3, row: 3 },  // Ge
+
+            // Group 15
+            { code: 'C', radius: 0.075, density: 0.0012, mp: -210, phase: 'gas', group: 4, row: 1 }, // N
+            { code: 'Y', radius: 0.110, density: 1.82, mp: 44, phase: 'solid', group: 4, row: 2 },   // P
+            { code: 'M', radius: 0.120, density: 5.72, mp: 817, phase: 'solid', group: 4, row: 3 },  // As
+
+            // Group 16
+            { code: 'A', radius: 0.073, density: 0.0014, mp: -218, phase: 'gas', group: 5, row: 1 }, // O
+            { code: 'Q', radius: 0.103, density: 2.07, mp: 115, phase: 'solid', group: 5, row: 2 },  // S
+            { code: 'K', radius: 0.117, density: 4.79, mp: 217, phase: 'solid', group: 5, row: 3 },  // Se
+
+            // Group 17
+            { code: 'O', radius: 0.072, density: 0.0017, mp: -220, phase: 'gas', group: 6, row: 1 }, // F
+            { code: 'W', radius: 0.099, density: 0.0032, mp: -101, phase: 'gas', group: 6, row: 2 }, // Cl
+            { code: 'V', radius: 0.114, density: 3.12, mp: -7.2, phase: 'liquid', group: 6, row: 3 },// Br
+
+            // Group 18
+            { code: 'E', radius: 0.031, density: 0.00018, mp: -272, phase: 'gas', group: 7, row: 0 },// He
+            { code: 'B', radius: 0.071, density: 0.0009, mp: -249, phase: 'gas', group: 7, row: 1 }, // Ne
+            { code: 'X', radius: 0.098, density: 0.0018, mp: -189, phase: 'gas', group: 7, row: 2 }, // Ar
+            { code: 'J', radius: 0.112, density: 0.0037, mp: -157, phase: 'gas', group: 7, row: 3 }, // Kr
+        ];
+
+        // State
+        let placedCards = {}; // format: { "row-col": { cardData, userSymbol, userAtomic } }
+        let currentModalCard = null;
+        let heatmapMode = null; // 'radius', 'density', or null
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGrid();
+            renderDeck();
+        });
+
+        // --- RENDERING ---
+
+        function renderGrid() {
+            const grid = document.getElementById('ptable-grid');
+            grid.innerHTML = '';
+
+            for (let r = 0; r < 6; r++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'grid grid-cols-8 gap-1 h-24';
+                
+                for (let c = 0; c < 8; c++) {
+                    const cellId = `${r}-${c}`;
+                    const cell = document.createElement('div');
+                    cell.className = 'drop-zone bg-slate-100 border-2 border-slate-200 rounded flex items-center justify-center relative overflow-hidden';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.id = `cell-${cellId}`;
+
+                    // Add row label for first column
+                    if (c === 0) {
+                        const lbl = document.createElement('span');
+                        lbl.innerText = r + 1;
+                        lbl.className = 'absolute left-1 top-1 text-[10px] text-slate-400 font-mono';
+                        cell.appendChild(lbl);
+                    }
+
+                    // Events
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('dragleave', handleDragLeave);
+                    cell.addEventListener('drop', handleDrop);
+                    cell.addEventListener('click', () => handleCellClick(cellId));
+
+                    rowDiv.appendChild(cell);
+                }
+                grid.appendChild(rowDiv);
+            }
+        }
+
+        function renderDeck() {
+            const deck = document.getElementById('element-deck');
+            deck.innerHTML = '';
+            let count = 0;
+
+            elementsData.forEach(el => {
+                // If not placed
+                const isPlaced = Object.values(placedCards).find(p => p.data.code === el.code);
+                if (!isPlaced) {
+                    const card = createCardElement(el);
+                    deck.appendChild(card);
+                    count++;
+                }
+            });
+            
+            document.getElementById('deck-count').innerText = count;
+        }
+
+        function createCardElement(el, isPlaced = false) {
+            const div = document.createElement('div');
+            div.className = `element-card bg-white border border-slate-300 rounded shadow-sm p-2 flex flex-col justify-between ${isPlaced ? 'placed' : 'h-24 w-full hover:shadow-md'}`;
+            div.draggable = !isPlaced;
+            div.dataset.code = el.code;
+
+            // Content
+            let html = `
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-lg text-slate-800 font-mono">${el.code}</span>
+                    <span class="text-[10px] uppercase text-slate-400">${el.phase}</span>
+                </div>
+                <div class="text-[10px] text-slate-600 space-y-0.5">
+                    <div class="flex justify-between"><span>Rad:</span> <strong>${el.radius}</strong></div>
+                    <div class="flex justify-between"><span>Den:</span> <strong>${el.density}</strong></div>
+                    <div class="flex justify-between"><span>MP:</span> <strong>${el.mp}</strong></div>
+                </div>
+            `;
+
+            // If placed, show user input if exists
+            if (isPlaced) {
+                const userData = Object.values(placedCards).find(p => p.data.code === el.code);
+                if (userData && userData.userSymbol) {
+                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-blue-600 font-bold text-xs">${userData.userSymbol} (${userData.userAtomic})</div>`;
+                } else {
+                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-slate-300 text-[10px] italic">Click to ID</div>`;
+                }
+            }
+
+            div.innerHTML = html;
+
+            if (!isPlaced) {
+                div.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', el.code);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+            }
+
+            return div;
+        }
+
+        // --- INTERACTIONS ---
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const cell = e.currentTarget;
+            cell.classList.remove('drag-over');
+            
+            const code = e.dataTransfer.getData('text/plain');
+            const cellId = `${cell.dataset.row}-${cell.dataset.col}`;
+
+            // Check if cell occupied
+            if (placedCards[cellId]) return;
+
+            // Check if card already placed elsewhere (move logic)
+            // For simplicity, remove from old spot if exists
+            for (let key in placedCards) {
+                if (placedCards[key].data.code === code) {
+                    delete placedCards[key];
+                    document.getElementById(`cell-${key}`).innerHTML = '';
+                    // Re-add label if col 0
+                    if (key.endsWith('-0')) {
+                        const r = key.split('-')[0];
+                        document.getElementById(`cell-${key}`).innerHTML = `<span class="absolute left-1 top-1 text-[10px] text-slate-400 font-mono">${parseInt(r)+1}</span>`;
+                    }
+                }
+            }
+
+            // Place
+            const data = elementsData.find(el => el.code === code);
+            placedCards[cellId] = { data: data, userSymbol: null, userAtomic: null };
+            
+            refreshCell(cellId);
+            renderDeck();
+            applyHeatmap(); // Re-apply if active
+        }
+
+        function refreshCell(cellId) {
+            const cell = document.getElementById(`cell-${cellId}`);
+            // Clear but keep row number if needed
+            const r = cell.dataset.row;
+            const c = cell.dataset.col;
+            cell.innerHTML = '';
+            
+            if (c === '0') {
+                 cell.innerHTML = `<span class="absolute left-1 top-1 text-[10px] text-slate-400 font-mono">${parseInt(r)+1}</span>`;
+            }
+
+            if (placedCards[cellId]) {
+                const card = createCardElement(placedCards[cellId].data, true);
+                cell.appendChild(card);
+            }
+        }
+
+        function handleCellClick(cellId) {
+            if (!placedCards[cellId]) return;
+            
+            currentModalCard = cellId;
+            const entry = placedCards[cellId];
+            
+            document.getElementById('modal-code').innerText = entry.data.code;
+            document.getElementById('input-atomic-num').value = entry.userAtomic || '';
+            document.getElementById('input-symbol').value = entry.userSymbol || '';
+            document.getElementById('input-oxi').value = entry.userOxi || '';
+            
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+            currentModalCard = null;
+        }
+
+        function saveCardDetails() {
+            if (!currentModalCard) return;
+
+            const entry = placedCards[currentModalCard];
+            entry.userAtomic = document.getElementById('input-atomic-num').value;
+            entry.userSymbol = document.getElementById('input-symbol').value;
+            entry.userOxi = document.getElementById('input-oxi').value;
+
+            refreshCell(currentModalCard);
+            closeModal();
+        }
+
+        // --- TOOLS ---
+
+        function toggleHeatmap(type) {
+            heatmapMode = (heatmapMode === type) ? null : type;
+            applyHeatmap();
+        }
+
+        function applyHeatmap() {
+            // Find min/max for normalization
+            let vals = elementsData.map(e => heatmapMode === 'radius' ? e.radius : e.density);
+            let min = Math.min(...vals);
+            let max = Math.max(...vals);
+
+            for (let key in placedCards) {
+                const cell = document.getElementById(`cell-${key}`);
+                const cardDiv = cell.querySelector('.element-card');
+                if (!cardDiv) continue;
+
+                if (!heatmapMode) {
+                    cardDiv.className = cardDiv.className.replace(/heat-\w+/g, '').trim();
+                    cardDiv.classList.add('bg-white', 'text-slate-800');
+                    continue;
+                }
+
+                const val = heatmapMode === 'radius' ? placedCards[key].data.radius : placedCards[key].data.density;
+                const pct = (val - min) / (max - min);
+
+                // Reset base styles
+                cardDiv.classList.remove('bg-white', 'text-slate-800', 'heat-low', 'heat-med', 'heat-high');
+
+                if (pct < 0.33) cardDiv.classList.add('heat-low');
+                else if (pct < 0.66) cardDiv.classList.add('heat-med');
+                else cardDiv.classList.add('heat-high');
+            }
+        }
+
+        function checkPlacement() {
+            let correct = 0;
+            let total = 0;
+
+            for (let key in placedCards) {
+                total++;
+                const r = parseInt(key.split('-')[0]);
+                const c = parseInt(key.split('-')[1]);
+                const data = placedCards[key].data;
+
+                // Simple check logic: Group must match col, Row must match row
+                // Note: The grid has 8 cols. 
+                // data.group -> 0=Group1(Col0), 1=Group2(Col1), 2=Group13(Col2), ...
+                if (data.row === r && data.group === c) {
+                    correct++;
+                }
+            }
+
+            const status = document.getElementById('status-msg');
+            if (total === 0) {
+                status.innerText = "No elements placed yet.";
+                status.className = "bg-white p-3 rounded border border-slate-200 text-xs text-slate-500 text-center";
+            } else {
+                const pct = Math.round((correct / elementsData.length) * 100); // % of total deck
+                status.innerHTML = `<strong>${correct}</strong> correct positions out of <strong>${total}</strong> placed.`;
+                
+                if (correct === total && total === elementsData.length) {
+                    status.className = "bg-green-100 p-3 rounded border border-green-300 text-xs text-green-800 text-center font-bold";
+                    status.innerHTML += " MISSION COMPLETE!";
+                } else {
+                    status.className = "bg-yellow-50 p-3 rounded border border-yellow-200 text-xs text-yellow-800 text-center";
+                }
+            }
+        }
+
+        // --- VIEWS ---
+        function setView(view) {
+            document.getElementById('view-lab').classList.add('hidden');
+            document.getElementById('view-analysis').classList.add('hidden');
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`view-${view}`).classList.add('flex');
+
+            // Toggle Button Styles
+            const btnLab = document.getElementById('btn-view-lab');
+            const btnAn = document.getElementById('btn-view-analysis');
+            
+            if (view === 'lab') {
+                btnLab.className = "px-3 py-1.5 rounded bg-blue-600 text-white shadow transition";
+                btnAn.className = "px-3 py-1.5 rounded hover:bg-slate-700 text-slate-300 transition";
+            } else {
+                btnAn.className = "px-3 py-1.5 rounded bg-blue-600 text-white shadow transition";
+                btnLab.className = "px-3 py-1.5 rounded hover:bg-slate-700 text-slate-300 transition";
+            }
+        }
+
+    </script>
+</body>
+</html>
