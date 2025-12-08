@@ -7,21 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Lab Coat White, Blueprint Blue, & Warning Orange -->
-    <!-- Application Structure Plan: 
-         1. Hero/Header: Title and utility toolbar (Reset, Check Work, Visualization Modes).
-         2. Main Workspace (Split View):
-            - Left: The "Unknowns Deck" (Scrollable list of unplaced elements).
-            - Right: The "Mendeleev Grid" (Drop zone table for Representative Elements).
-         3. Clues Panel: Collapsible sidebar containing the specific logic rules from the PDF.
-         4. Analysis Tab: Digital version of the worksheet questions.
-    -->
-    <!-- Visualization & Content Choices:
-         - Drag & Drop API: Native HTML5 DnD for the core interaction.
-         - Heatmap Overlay: JS logic to color-code placed blocks based on numerical values (Radius/MP) to visualize trends dynamically.
-         - Input Fields: Embedded in placed blocks to allow students to "fill in the missing info" (Symbol, Atomic #) as per instructions.
-         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .font-mono { font-family: 'Roboto Mono', monospace; }
@@ -39,7 +24,8 @@
         }
         .element-card:active { cursor: grabbing; transform: scale(1.02); }
         .element-card.placed {
-            cursor: pointer;
+            /* Still allow grabbing for readjustment, but imply interaction */
+            cursor: grab; 
             height: 100%;
             width: 100%;
             border-radius: 0;
@@ -54,6 +40,12 @@
             border: 2px dashed #3b82f6;
         }
         
+        /* Deck Drop Zone Styles */
+        #element-deck.drag-over {
+            background-color: #f1f5f9;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
         /* Heatmap Scales */
         .heat-low { background-color: #e0f2fe; color: #0c4a6e; }
         .heat-med { background-color: #7dd3fc; color: #0c4a6e; }
@@ -66,6 +58,11 @@
     <header class="bg-slate-900 text-white shadow-md z-20 flex-none">
         <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
+                <a href="/Chemistry/index.html" class="mr-2 text-slate-400 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </a>
                 <div class="text-2xl">🧩</div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight">Mendeleev's Mission</h1>
@@ -100,15 +97,20 @@
         <div id="view-lab" class="flex-grow flex w-full h-full">
             
             <!-- Left: Element Deck -->
-            <div class="w-64 bg-slate-100 border-r border-slate-200 flex flex-col flex-none z-10">
+            <div class="w-64 bg-slate-100 border-r border-slate-200 flex flex-col flex-none z-10 shadow-inner">
                 <div class="p-4 bg-white border-b border-slate-200 shadow-sm">
                     <h2 class="font-bold text-slate-700 text-sm flex justify-between items-center">
                         Unplaced Elements
                         <span id="deck-count" class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs">26</span>
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Drag these to the grid.</p>
+                    <p class="text-xs text-slate-500 mt-1">Drag back here to remove.</p>
                 </div>
-                <div id="element-deck" class="flex-grow overflow-y-auto p-3 space-y-3">
+                <!-- Added drag event listeners for "Remove" functionality -->
+                <div id="element-deck" 
+                     class="flex-grow overflow-y-auto p-3 space-y-3 transition-colors"
+                     ondragover="handleDragOverDeck(event)" 
+                     ondragleave="handleDragLeaveDeck(event)" 
+                     ondrop="handleDropDeck(event)">
                     <!-- Cards injected via JS -->
                 </div>
             </div>
@@ -284,67 +286,54 @@
     <!-- JavaScript Application Logic -->
     <script>
         // --- DATA & STATE ---
-        
-        // Data derived from PDF snippets + logic mapping
-        // Groups: 
-        // 1: PSIF (Radius: F<I<S<P) -> F(H), I(Li), S(Na), P(K)
-        // 2: LHT (L=Ca, H=Mg, T=Be) -> T, H, L
-        // 13: ZRD (Radius: R<D<Z) -> R(B), D(Al), Z(Ga)
-        // 14: GUN (U=C, G=Si, N=Ge) -> U, G, N
-        // 15: YMC (C=N, Y=P, M=As) -> C, Y, M
-        // 16: QKA (A=O, Q=S, K=Se) -> A, Q, K
-        // 17: WOV (O=F, W=Cl, V=Br) -> O, W, V
-        // 18: JXBE (E=He, B=Ne, X=Ar, J=Kr) -> E, B, X, J (Wait, E is Noble Gas. Order by radius.)
-        // E (He? Radius small), B, X, J. 
-
         const elementsData = [
             // Group 1 (Alkali)
-            { code: 'F', radius: 0.053, density: 0.00009, mp: -259, phase: 'gas', group: 0, row: 0 }, // H
-            { code: 'I', radius: 0.157, density: 0.534, mp: 180, phase: 'solid', group: 0, row: 1 },  // Li
-            { code: 'S', radius: 0.191, density: 0.97, mp: 98, phase: 'solid', group: 0, row: 2 },   // Na
-            { code: 'P', radius: 0.227, density: 0.86, mp: 64, phase: 'solid', group: 0, row: 3 },   // K
+            { code: 'F', radius: 0.053, density: 0.00009, mp: -259, phase: 'gas', group: 0, row: 0 }, 
+            { code: 'I', radius: 0.157, density: 0.534, mp: 180, phase: 'solid', group: 0, row: 1 },  
+            { code: 'S', radius: 0.191, density: 0.97, mp: 98, phase: 'solid', group: 0, row: 2 },   
+            { code: 'P', radius: 0.227, density: 0.86, mp: 64, phase: 'solid', group: 0, row: 3 },   
 
             // Group 2 (Alkaline Earth)
-            { code: 'T', radius: 0.112, density: 1.85, mp: 1278, phase: 'solid', group: 1, row: 1 }, // Be
-            { code: 'H', radius: 0.160, density: 1.74, mp: 650, phase: 'solid', group: 1, row: 2 },  // Mg
-            { code: 'L', radius: 0.197, density: 1.55, mp: 839, phase: 'solid', group: 1, row: 3 },  // Ca
+            { code: 'T', radius: 0.112, density: 1.85, mp: 1278, phase: 'solid', group: 1, row: 1 }, 
+            { code: 'H', radius: 0.160, density: 1.74, mp: 650, phase: 'solid', group: 1, row: 2 },  
+            { code: 'L', radius: 0.197, density: 1.55, mp: 839, phase: 'solid', group: 1, row: 3 },  
 
             // Group 13
-            { code: 'R', radius: 0.085, density: 2.34, mp: 2076, phase: 'solid', group: 2, row: 1 }, // B
-            { code: 'D', radius: 0.143, density: 2.70, mp: 660, phase: 'solid', group: 2, row: 2 },  // Al
-            { code: 'Z', radius: 0.122, density: 5.90, mp: 29.8, phase: 'solid', group: 2, row: 3 }, // Ga (Typo in PDF snippet? Ga radius < Al usually, but app follows snippets)
+            { code: 'R', radius: 0.085, density: 2.34, mp: 2076, phase: 'solid', group: 2, row: 1 }, 
+            { code: 'D', radius: 0.143, density: 2.70, mp: 660, phase: 'solid', group: 2, row: 2 },  
+            { code: 'Z', radius: 0.122, density: 5.90, mp: 29.8, phase: 'solid', group: 2, row: 3 }, 
 
             // Group 14
-            { code: 'U', radius: 0.077, density: 2.26, mp: 3550, phase: 'solid', group: 3, row: 1 }, // C
-            { code: 'G', radius: 0.118, density: 2.33, mp: 1410, phase: 'solid', group: 3, row: 2 }, // Si
-            { code: 'N', radius: 0.122, density: 5.32, mp: 937, phase: 'solid', group: 3, row: 3 },  // Ge
+            { code: 'U', radius: 0.077, density: 2.26, mp: 3550, phase: 'solid', group: 3, row: 1 }, 
+            { code: 'G', radius: 0.118, density: 2.33, mp: 1410, phase: 'solid', group: 3, row: 2 }, 
+            { code: 'N', radius: 0.122, density: 5.32, mp: 937, phase: 'solid', group: 3, row: 3 },  
 
             // Group 15
-            { code: 'C', radius: 0.075, density: 0.0012, mp: -210, phase: 'gas', group: 4, row: 1 }, // N
-            { code: 'Y', radius: 0.110, density: 1.82, mp: 44, phase: 'solid', group: 4, row: 2 },   // P
-            { code: 'M', radius: 0.120, density: 5.72, mp: 817, phase: 'solid', group: 4, row: 3 },  // As
+            { code: 'C', radius: 0.075, density: 0.0012, mp: -210, phase: 'gas', group: 4, row: 1 }, 
+            { code: 'Y', radius: 0.110, density: 1.82, mp: 44, phase: 'solid', group: 4, row: 2 },   
+            { code: 'M', radius: 0.120, density: 5.72, mp: 817, phase: 'solid', group: 4, row: 3 },  
 
             // Group 16
-            { code: 'A', radius: 0.073, density: 0.0014, mp: -218, phase: 'gas', group: 5, row: 1 }, // O
-            { code: 'Q', radius: 0.103, density: 2.07, mp: 115, phase: 'solid', group: 5, row: 2 },  // S
-            { code: 'K', radius: 0.117, density: 4.79, mp: 217, phase: 'solid', group: 5, row: 3 },  // Se
+            { code: 'A', radius: 0.073, density: 0.0014, mp: -218, phase: 'gas', group: 5, row: 1 }, 
+            { code: 'Q', radius: 0.103, density: 2.07, mp: 115, phase: 'solid', group: 5, row: 2 },  
+            { code: 'K', radius: 0.117, density: 4.79, mp: 217, phase: 'solid', group: 5, row: 3 },  
 
             // Group 17
-            { code: 'O', radius: 0.072, density: 0.0017, mp: -220, phase: 'gas', group: 6, row: 1 }, // F
-            { code: 'W', radius: 0.099, density: 0.0032, mp: -101, phase: 'gas', group: 6, row: 2 }, // Cl
-            { code: 'V', radius: 0.114, density: 3.12, mp: -7.2, phase: 'liquid', group: 6, row: 3 },// Br
+            { code: 'O', radius: 0.072, density: 0.0017, mp: -220, phase: 'gas', group: 6, row: 1 }, 
+            { code: 'W', radius: 0.099, density: 0.0032, mp: -101, phase: 'gas', group: 6, row: 2 }, 
+            { code: 'V', radius: 0.114, density: 3.12, mp: -7.2, phase: 'liquid', group: 6, row: 3 },
 
             // Group 18
-            { code: 'E', radius: 0.031, density: 0.00018, mp: -272, phase: 'gas', group: 7, row: 0 },// He
-            { code: 'B', radius: 0.071, density: 0.0009, mp: -249, phase: 'gas', group: 7, row: 1 }, // Ne
-            { code: 'X', radius: 0.098, density: 0.0018, mp: -189, phase: 'gas', group: 7, row: 2 }, // Ar
-            { code: 'J', radius: 0.112, density: 0.0037, mp: -157, phase: 'gas', group: 7, row: 3 }, // Kr
+            { code: 'E', radius: 0.031, density: 0.00018, mp: -272, phase: 'gas', group: 7, row: 0 },
+            { code: 'B', radius: 0.071, density: 0.0009, mp: -249, phase: 'gas', group: 7, row: 1 }, 
+            { code: 'X', radius: 0.098, density: 0.0018, mp: -189, phase: 'gas', group: 7, row: 2 }, 
+            { code: 'J', radius: 0.112, density: 0.0037, mp: -157, phase: 'gas', group: 7, row: 3 }, 
         ];
 
         // State
-        let placedCards = {}; // format: { "row-col": { cardData, userSymbol, userAtomic } }
+        let placedCards = {}; // format: { "row-col": { data, userSymbol, userAtomic } }
         let currentModalCard = null;
-        let heatmapMode = null; // 'radius', 'density', or null
+        let heatmapMode = null; 
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -370,7 +359,6 @@
                     cell.dataset.col = c;
                     cell.id = `cell-${cellId}`;
 
-                    // Add row label for first column
                     if (c === 0) {
                         const lbl = document.createElement('span');
                         lbl.innerText = r + 1;
@@ -381,7 +369,7 @@
                     // Events
                     cell.addEventListener('dragover', handleDragOver);
                     cell.addEventListener('dragleave', handleDragLeave);
-                    cell.addEventListener('drop', handleDrop);
+                    cell.addEventListener('drop', handleDropGrid);
                     cell.addEventListener('click', () => handleCellClick(cellId));
 
                     rowDiv.appendChild(cell);
@@ -410,41 +398,40 @@
 
         function createCardElement(el, isPlaced = false) {
             const div = document.createElement('div');
+            // Changed: Removed logic that disabled dragging. Now always draggable.
             div.className = `element-card bg-white border border-slate-300 rounded shadow-sm p-2 flex flex-col justify-between ${isPlaced ? 'placed' : 'h-24 w-full hover:shadow-md'}`;
-            div.draggable = !isPlaced;
+            div.draggable = true; 
             div.dataset.code = el.code;
 
             // Content
             let html = `
-                <div class="flex justify-between items-start">
+                <div class="flex justify-between items-start pointer-events-none">
                     <span class="font-bold text-lg text-slate-800 font-mono">${el.code}</span>
                     <span class="text-[10px] uppercase text-slate-400">${el.phase}</span>
                 </div>
-                <div class="text-[10px] text-slate-600 space-y-0.5">
+                <div class="text-[10px] text-slate-600 space-y-0.5 pointer-events-none">
                     <div class="flex justify-between"><span>Rad:</span> <strong>${el.radius}</strong></div>
                     <div class="flex justify-between"><span>Den:</span> <strong>${el.density}</strong></div>
                     <div class="flex justify-between"><span>MP:</span> <strong>${el.mp}</strong></div>
                 </div>
             `;
 
-            // If placed, show user input if exists
             if (isPlaced) {
                 const userData = Object.values(placedCards).find(p => p.data.code === el.code);
                 if (userData && userData.userSymbol) {
-                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-blue-600 font-bold text-xs">${userData.userSymbol} (${userData.userAtomic})</div>`;
+                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-blue-600 font-bold text-xs pointer-events-none">${userData.userSymbol} (${userData.userAtomic})</div>`;
                 } else {
-                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-slate-300 text-[10px] italic">Click to ID</div>`;
+                    html += `<div class="mt-1 pt-1 border-t border-slate-100 text-center text-slate-300 text-[10px] italic pointer-events-none">Click to ID</div>`;
                 }
             }
 
             div.innerHTML = html;
 
-            if (!isPlaced) {
-                div.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', el.code);
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-            }
+            // Always add drag listener
+            div.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', el.code);
+                e.dataTransfer.effectAllowed = 'move';
+            });
 
             return div;
         }
@@ -455,48 +442,82 @@
             e.preventDefault();
             e.currentTarget.classList.add('drag-over');
         }
+        
+        function handleDragOverDeck(e) {
+            e.preventDefault();
+            document.getElementById('element-deck').classList.add('drag-over');
+        }
 
         function handleDragLeave(e) {
             e.currentTarget.classList.remove('drag-over');
         }
+        
+        function handleDragLeaveDeck(e) {
+            document.getElementById('element-deck').classList.remove('drag-over');
+        }
 
-        function handleDrop(e) {
+        function handleDropGrid(e) {
             e.preventDefault();
             const cell = e.currentTarget;
             cell.classList.remove('drag-over');
             
             const code = e.dataTransfer.getData('text/plain');
-            const cellId = `${cell.dataset.row}-${cell.dataset.col}`;
+            const targetId = `${cell.dataset.row}-${cell.dataset.col}`;
+            
+            // Identify where card is coming from
+            const sourceKey = Object.keys(placedCards).find(k => placedCards[k].data.code === code);
+            const cardIncomingData = elementsData.find(el => el.code === code);
+            
+            // Check if target is same as source (dropping on self)
+            if (sourceKey === targetId) return;
 
-            // Check if cell occupied
-            if (placedCards[cellId]) return;
+            const cardAtTarget = placedCards[targetId] ? placedCards[targetId] : null;
+            const cardIncomingObj = sourceKey ? placedCards[sourceKey] : { data: cardIncomingData, userSymbol: null, userAtomic: null };
 
-            // Check if card already placed elsewhere (move logic)
-            // For simplicity, remove from old spot if exists
-            for (let key in placedCards) {
-                if (placedCards[key].data.code === code) {
-                    delete placedCards[key];
-                    document.getElementById(`cell-${key}`).innerHTML = '';
-                    // Re-add label if col 0
-                    if (key.endsWith('-0')) {
-                        const r = key.split('-')[0];
-                        document.getElementById(`cell-${key}`).innerHTML = `<span class="absolute left-1 top-1 text-[10px] text-slate-400 font-mono">${parseInt(r)+1}</span>`;
-                    }
+            // Logic:
+            if (cardAtTarget) {
+                // Target is Occupied -> Swap or Replace
+                if (sourceKey) {
+                    // Coming from Grid: SWAP
+                    placedCards[targetId] = cardIncomingObj;
+                    placedCards[sourceKey] = cardAtTarget;
+                    refreshCell(sourceKey);
+                } else {
+                    // Coming from Deck: REPLACE (Old one goes back to deck effectively by being overwritten)
+                    placedCards[targetId] = cardIncomingObj;
+                }
+            } else {
+                // Target is Empty -> Place or Move
+                placedCards[targetId] = cardIncomingObj;
+                if (sourceKey) {
+                    delete placedCards[sourceKey];
+                    refreshCell(sourceKey);
                 }
             }
 
-            // Place
-            const data = elementsData.find(el => el.code === code);
-            placedCards[cellId] = { data: data, userSymbol: null, userAtomic: null };
-            
-            refreshCell(cellId);
+            refreshCell(targetId);
             renderDeck();
-            applyHeatmap(); // Re-apply if active
+            applyHeatmap();
+        }
+
+        function handleDropDeck(e) {
+            e.preventDefault();
+            document.getElementById('element-deck').classList.remove('drag-over');
+            const code = e.dataTransfer.getData('text/plain');
+            
+            // Find if it was on the grid
+            const sourceKey = Object.keys(placedCards).find(k => placedCards[k].data.code === code);
+            
+            if (sourceKey) {
+                // Remove from grid
+                delete placedCards[sourceKey];
+                refreshCell(sourceKey);
+                renderDeck(); // Will re-render it in deck because it's no longer in placedCards
+            }
         }
 
         function refreshCell(cellId) {
             const cell = document.getElementById(`cell-${cellId}`);
-            // Clear but keep row number if needed
             const r = cell.dataset.row;
             const c = cell.dataset.col;
             cell.innerHTML = '';
@@ -550,7 +571,6 @@
         }
 
         function applyHeatmap() {
-            // Find min/max for normalization
             let vals = elementsData.map(e => heatmapMode === 'radius' ? e.radius : e.density);
             let min = Math.min(...vals);
             let max = Math.max(...vals);
@@ -588,9 +608,6 @@
                 const c = parseInt(key.split('-')[1]);
                 const data = placedCards[key].data;
 
-                // Simple check logic: Group must match col, Row must match row
-                // Note: The grid has 8 cols. 
-                // data.group -> 0=Group1(Col0), 1=Group2(Col1), 2=Group13(Col2), ...
                 if (data.row === r && data.group === c) {
                     correct++;
                 }
@@ -601,7 +618,7 @@
                 status.innerText = "No elements placed yet.";
                 status.className = "bg-white p-3 rounded border border-slate-200 text-xs text-slate-500 text-center";
             } else {
-                const pct = Math.round((correct / elementsData.length) * 100); // % of total deck
+                const pct = Math.round((correct / elementsData.length) * 100); 
                 status.innerHTML = `<strong>${correct}</strong> correct positions out of <strong>${total}</strong> placed.`;
                 
                 if (correct === total && total === elementsData.length) {
@@ -620,7 +637,6 @@
             document.getElementById(`view-${view}`).classList.remove('hidden');
             document.getElementById(`view-${view}`).classList.add('flex');
 
-            // Toggle Button Styles
             const btnLab = document.getElementById('btn-view-lab');
             const btnAn = document.getElementById('btn-view-analysis');
             
