@@ -1,178 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unit 6 | Chemical Bonding & Nomenclature</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
     body { font-family: 'Inter', sans-serif; }
-    details > summary { cursor: pointer; }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800">
 
-<main class="max-w-5xl mx-auto px-6 py-12">
+<!-- UNIT NAV -->
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <span class="text-xl">⚗️</span>
+      <span class="font-bold">Unit 6: Bonding & Nomenclature</span>
+    </div>
+    <nav class="hidden md:flex gap-6 text-sm font-medium">
+      <a href="#overview" class="hover:text-blue-600">Overview</a>
+      <a href="#bonding" class="hover:text-blue-600">Bonding</a>
+      <a href="#ions" class="hover:text-blue-600">Ions</a>
+      <a href="#naming" class="hover:text-blue-600">Naming</a>
+      <a href="#acids" class="hover:text-blue-600">Acids</a>
+      <a href="#practice" class="hover:text-blue-600">Practice</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- Header -->
-  <header class="mb-12">
-    <span class="text-orange-600 font-bold uppercase tracking-wider text-sm">Unit 6</span>
-    <h1 class="text-4xl font-extrabold text-slate-900 mt-2 mb-4">
-      Chemical Bonding & Nomenclature
-    </h1>
-    <p class="text-lg text-slate-600 max-w-3xl">
-      In this unit, you will learn how electron behavior determines how substances bond
-      and how chemical compounds are named.
+<!-- HERO -->
+<section class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <h1 class="text-4xl font-extrabold mb-4">How Atoms Stick Together</h1>
+    <p class="text-lg opacity-90">
+      Learn how electron behavior explains chemical bonding and determines how compounds are named.
     </p>
-  </header>
+  </div>
+</section>
 
-  <!-- Essential Question -->
-  <section class="bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-8">
-    <h2 class="font-bold text-xl mb-2">Essential Question</h2>
-    <p class="text-slate-700">
-      How does electron behavior determine how substances bond and how compounds are named?
+<!-- OVERVIEW -->
+<section id="overview" class="max-w-4xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-bold mb-6">Unit Overview</h2>
+  <div class="bg-white rounded-2xl shadow border p-8 space-y-3">
+    <p>By the end of this unit, you will be able to:</p>
+    <ul class="list-disc ml-6">
+      <li>Explain why atoms bond</li>
+      <li>Identify ionic, covalent, and metallic bonds</li>
+      <li>Predict ion charges</li>
+      <li>Write formulas and names for compounds</li>
+      <li>Classify unfamiliar compounds</li>
+    </ul>
+  </div>
+</section>
+
+<!-- BONDING -->
+<section id="bonding" class="max-w-4xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-bold mb-6">Why Atoms Bond</h2>
+
+  <div class="bg-white rounded-2xl shadow border p-8 space-y-4">
+    <p class="text-lg">
+      Atoms bond to become <strong>more stable</strong> by achieving a full valence shell.
     </p>
-  </section>
 
-  <!-- ACCORDION SECTIONS -->
+    <ul class="list-disc ml-6">
+      <li>Stability = lower potential energy</li>
+      <li>Valence electrons determine reactivity</li>
+      <li>Metals lose electrons, nonmetals gain or share</li>
+    </ul>
 
-  <!-- Why Atoms Bond -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">1. Why Atoms Bond</summary>
-    <div class="mt-4 space-y-3 text-slate-700">
-      <p>Atoms bond to become <strong>more stable</strong>.</p>
-      <ul class="list-disc ml-6">
-        <li>Stability = full valence shell (usually 8 electrons)</li>
-        <li>Bonding lowers potential energy</li>
-        <li>Valence electrons determine reactivity</li>
-      </ul>
+    <!-- Checkpoint -->
+    <div class="bg-slate-100 rounded-xl p-5 border mt-6">
+      <p class="font-semibold mb-3">Checkpoint: Why do atoms bond?</p>
+      <label class="block"><input type="radio" name="q1"> To increase atomic mass</label>
+      <label class="block"><input type="radio" name="q1"> To become more stable</label>
+      <label class="block"><input type="radio" name="q1"> To form molecules</label>
     </div>
-  </details>
+  </div>
 
-  <!-- Bond Types -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">2. Types of Chemical Bonds</summary>
-    <div class="mt-4 space-y-4">
-      <div>
-        <h3 class="font-semibold">Ionic Bonds</h3>
-        <p class="text-slate-700">Metal + nonmetal → electrons are transferred</p>
-      </div>
-      <div>
-        <h3 class="font-semibold">Covalent Bonds</h3>
-        <p class="text-slate-700">Nonmetal + nonmetal → electrons are shared</p>
-      </div>
-      <div>
-        <h3 class="font-semibold">Metallic Bonds</h3>
-        <p class="text-slate-700">Metals → sea of delocalized electrons</p>
-      </div>
-    </div>
-  </details>
+  <div class="mt-10 text-right">
+    <a href="#ions" class="text-blue-600 font-semibold hover:underline">Continue → Ions</a>
+  </div>
+</section>
 
-  <!-- Ions -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">3. Ions</summary>
-    <div class="mt-4 space-y-3 text-slate-700">
-      <p>An <strong>ion</strong> is an atom with a charge.</p>
-      <ul class="list-disc ml-6">
-        <li><strong>Cations:</strong> positive, formed by losing electrons</li>
-        <li><strong>Anions:</strong> negative, formed by gaining electrons, end in <em>-ide</em></li>
-      </ul>
-    </div>
-  </details>
+<!-- IONS -->
+<section id="ions" class="max-w-4xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-bold mb-6">Ions & Charges</h2>
 
-  <!-- Charges -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">4. Predicting Ion Charges</summary>
-    <div class="mt-4 text-slate-700">
-      <table class="w-full border border-slate-300 text-sm">
-        <thead class="bg-slate-100">
-          <tr>
-            <th class="border p-2">Group</th>
-            <th class="border p-2">Charge</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="border p-2">1</td><td class="border p-2">+1</td></tr>
-          <tr><td class="border p-2">2</td><td class="border p-2">+2</td></tr>
-          <tr><td class="border p-2">13</td><td class="border p-2">+3</td></tr>
-          <tr><td class="border p-2">16</td><td class="border p-2">–2</td></tr>
-          <tr><td class="border p-2">17</td><td class="border p-2">–1</td></tr>
-        </tbody>
-      </table>
+  <div class="bg-white rounded-2xl shadow border p-8 space-y-4">
+    <p>An <strong>ion</strong> is an atom with a charge due to gaining or losing electrons.</p>
 
-      <p class="mt-3">
-        If the charge cannot be predicted, the metal requires a <strong>Roman numeral</strong>.
-      </p>
-    </div>
-  </details>
+    <ul class="list-disc ml-6">
+      <li><strong>Cations:</strong> positive, formed by losing electrons</li>
+      <li><strong>Anions:</strong> negative, formed by gaining electrons, end in <em>-ide</em></li>
+    </ul>
 
-  <!-- Polyatomic -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">5. Polyatomic Ions</summary>
-    <div class="mt-4 text-slate-700">
-      <p>Polyatomic ions are groups of atoms acting as one charged unit.</p>
-      <ul class="list-disc ml-6 mt-2">
-        <li><strong>-ate</strong> = more oxygen</li>
-        <li><strong>-ite</strong> = less oxygen</li>
-        <li>Charge stays the same</li>
-      </ul>
-    </div>
-  </details>
+    <table class="w-full border mt-4 text-sm">
+      <tr class="bg-slate-100">
+        <th class="border p-2">Group</th>
+        <th class="border p-2">Charge</th>
+      </tr>
+      <tr><td class="border p-2">1</td><td class="border p-2">+1</td></tr>
+      <tr><td class="border p-2">2</td><td class="border p-2">+2</td></tr>
+      <tr><td class="border p-2">16</td><td class="border p-2">–2</td></tr>
+      <tr><td class="border p-2">17</td><td class="border p-2">–1</td></tr>
+    </table>
+  </div>
 
-  <!-- Ionic Naming -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">6. Ionic Compounds</summary>
-    <div class="mt-4 space-y-3 text-slate-700">
-      <p><strong>Writing formulas:</strong> balance charges to zero.</p>
-      <p><strong>Naming:</strong> name the cation, then the anion.</p>
-      <p>Use Roman numerals only when needed.</p>
-    </div>
-  </details>
+  <div class="mt-10 text-right">
+    <a href="#naming" class="text-blue-600 font-semibold hover:underline">Continue → Naming</a>
+  </div>
+</section>
 
-  <!-- Acids -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">7. Acids</summary>
-    <div class="mt-4 text-slate-700">
-      <ul class="list-disc ml-6">
-        <li>-ide → hydro– –ic acid</li>
-        <li>-ate → –ic acid</li>
-        <li>-ite → –ous acid</li>
-      </ul>
-    </div>
-  </details>
+<!-- NAMING -->
+<section id="naming" class="max-w-4xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-bold mb-6">Naming Compounds</h2>
 
-  <!-- Molecular -->
-  <details class="bg-white rounded-xl shadow border border-slate-200 p-6 mb-4">
-    <summary class="font-bold text-lg">8. Molecular Compounds</summary>
-    <div class="mt-4 text-slate-700">
-      <p>Two nonmetals → use prefixes.</p>
-      <p>No mono– on the first element.</p>
-    </div>
-  </details>
+  <div class="bg-white rounded-2xl shadow border p-8 space-y-4">
+    <p><strong>Ionic compounds:</strong> metal + nonmetal</p>
+    <p>Balance charges to write formulas.</p>
 
-  <!-- PRACTICE (HIDDEN BY DEFAULT) -->
-  <details class="bg-slate-100 rounded-xl border border-slate-300 p-6 mt-8">
-    <summary class="font-bold text-lg text-slate-600">
-      Practice (Click to Reveal)
-    </summary>
-    <div class="mt-4 text-slate-700">
+    <p><strong>Roman numerals</strong> are used when metals have multiple charges.</p>
+
+    <p><strong>Molecular compounds:</strong> two nonmetals, use prefixes.</p>
+
+    <ul class="list-disc ml-6">
+      <li>No “mono-” on the first element</li>
+      <li>Second element ends in <em>-ide</em></li>
+    </ul>
+  </div>
+
+  <div class="mt-10 text-right">
+    <a href="#acids" class="text-blue-600 font-semibold hover:underline">Continue → Acids</a>
+  </div>
+</section>
+
+<!-- ACIDS -->
+<section id="acids" class="max-w-4xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-bold mb-6">Acids</h2>
+
+  <div class="bg-white rounded-2xl shadow border p-8 space-y-4">
+    <p>Acids are covalent compounds that produce <strong>H⁺</strong> in water.</p>
+
+    <ul class="list-disc ml-6">
+      <li>-ide → hydro– –ic acid</li>
+      <li>-ate → –ic acid</li>
+      <li>-ite → –ous acid</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PRACTICE -->
+<section id="practice" class="bg-slate-900 text-white py-16">
+  <div class="max-w-4xl mx-auto px-6">
+    <h2 class="text-3xl font-bold mb-6">Practice</h2>
+    <div class="bg-slate-800 rounded-xl p-6">
       <p>Classify and name:</p>
-      <ul class="list-disc ml-6">
-        <li>SO₂</li>
-        <li>K₂S</li>
-        <li>CF₄</li>
-        <li>AlCl₃</li>
-        <li>CuSO₃</li>
-        <li>HI</li>
+      <ul class="list-disc ml-6 mt-4">
+        <li>Na₂SO₄</li>
+        <li>CO₂</li>
+        <li>HCl</li>
+        <li>Cu(NO₃)₂</li>
       </ul>
     </div>
-  </details>
-
-</main>
+  </div>
+</section>
 
 </body>
 </html>
+
