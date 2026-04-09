@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mole Conversion Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body { scroll-behavior: smooth; }
+    .answer-box { display: none; }
+    .answer-box.open { display: block; }
+    .problem-card:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <header class="bg-gradient-to-r from-sky-700 to-blue-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+      <h1 class="text-3xl md:text-4xl font-bold">Mole Conversion Review</h1>
+      <p class="mt-2 text-sky-100 text-lg">Regular Chemistry Review Guide • Follow the steps • Check the full work</p>
+      <div class="mt-4 flex flex-wrap gap-3 text-sm">
+        <a href="#map" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-xl">Conversion Map</a>
+        <a href="#examples" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-xl">Worked Examples</a>
+        <a href="#practice" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-xl">Practice Problems</a>
+        <a href="#atom" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-xl">Specific Atoms</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-10">
+    <section class="bg-white rounded-3xl shadow p-6 md:p-8">
+      <h2 class="text-2xl font-bold mb-4">Core Relationships</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-sky-50 border border-sky-200 rounded-2xl p-5">
+          <h3 class="text-xl font-semibold mb-2">Avogadro's Number</h3>
+          <p class="text-lg">$1\text{ mole} = 6.022 \times 10^{23}\text{ particles}$</p>
+          <p class="mt-3 text-slate-600">Use this when converting between <strong>moles</strong> and <strong>particles</strong>.</p>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+          <h3 class="text-xl font-semibold mb-2">Molar Mass</h3>
+          <p class="text-lg">$\text{molar mass} = \text{grams per mole}$</p>
+          <p class="mt-3 text-slate-600">Use the periodic table to convert between <strong>moles</strong> and <strong>grams</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="bg-white rounded-3xl shadow p-6 md:p-8">
+      <h2 class="text-2xl font-bold mb-4">Conversion Map</h2>
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+        <div class="text-2xl md:text-3xl font-bold">Particles $\Longleftrightarrow$ Moles $\Longleftrightarrow$ Grams</div>
+        <p class="mt-4 text-lg text-slate-700">Every conversion goes through <strong>moles</strong>.</p>
+        <div class="mt-5 grid md:grid-cols-3 gap-4 text-left">
+          <div class="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+            <h3 class="font-semibold">Particles → Moles</h3>
+            <p>Divide by $6.022 \times 10^{23}$</p>
+          </div>
+          <div class="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+            <h3 class="font-semibold">Moles → Particles</h3>
+            <p>Multiply by $6.022 \times 10^{23}$</p>
+          </div>
+          <div class="bg-green-50 rounded-2xl p-4 border border-green-200">
+            <h3 class="font-semibold">Moles ↔ Grams</h3>
+            <p>Use molar mass from the periodic table</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples" class="space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold">Worked Examples</h2>
+        <p class="text-slate-600 mt-1">Students can reveal each full solution with the work shown step by step.</p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <article class="problem-card transition-all duration-200 bg-white rounded-3xl shadow p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-sky-700 font-semibold">Example 1</p>
+              <h3 class="text-xl font-bold mt-1">Particles → Moles</h3>
+            </div>
+            <button class="toggle-answer bg-sky-700 text-white px-4 py-2 rounded-xl hover:bg-sky-800" data-target="ans1">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many moles are in $3.01 \times 10^{23}$ atoms?</p>
+          <div id="ans1" class="answer-box mt-5 bg-sky-50 rounded-2xl border border-sky-200 p-5">
+            <p><strong>Step 1:</strong> Use Avogadro's number.</p>
+            <p class="mt-2">$$3.01 \times 10^{23}\text{ atoms} \times \frac{1\text{ mole}}{6.022 \times 10^{23}\text{ atoms}}$$</p>
+            <p><strong>Step 2:</strong> Solve.</p>
+            <p>$$= 0.50\text{ moles}$$</p>
+            <p class="mt-2 font-semibold text-sky-800">Answer: $0.50$ moles</p>
+          </div>
+        </article>
+
+        <article class="problem-card transition-all duration-200 bg-white rounded-3xl shadow p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-sky-700 font-semibold">Example 2</p>
+              <h3 class="text-xl font-bold mt-1">Moles → Particles</h3>
+            </div>
+            <button class="toggle-answer bg-sky-700 text-white px-4 py-2 rounded-xl hover:bg-sky-800" data-target="ans2">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many particles are in 2.5 moles?</p>
+          <div id="ans2" class="answer-box mt-5 bg-sky-50 rounded-2xl border border-sky-200 p-5">
+            <p><strong>Step 1:</strong> Multiply by Avogadro's number.</p>
+            <p class="mt-2">$$2.5\text{ moles} \times 6.022 \times 10^{23}\frac{\text{particles}}{\text{mole}}$$</p>
+            <p><strong>Step 2:</strong> Solve.</p>
+            <p>$$= 1.51 \times 10^{24}\text{ particles}$$</p>
+            <p class="mt-2 font-semibold text-sky-800">Answer: $1.51 \times 10^{24}$ particles</p>
+          </div>
+        </article>
+
+        <article class="problem-card transition-all duration-200 bg-white rounded-3xl shadow p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-emerald-700 font-semibold">Example 3</p>
+              <h3 class="text-xl font-bold mt-1">Moles → Grams</h3>
+            </div>
+            <button class="toggle-answer bg-emerald-700 text-white px-4 py-2 rounded-xl hover:bg-emerald-800" data-target="ans3">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many grams are in 2.0 moles of CO<sub>2</sub>?</p>
+          <div id="ans3" class="answer-box mt-5 bg-emerald-50 rounded-2xl border border-emerald-200 p-5">
+            <p><strong>Step 1:</strong> Find molar mass of CO<sub>2</sub>.</p>
+            <p>$12.01 + 2(16.00) = 44.01\text{ g/mol}$</p>
+            <p class="mt-2"><strong>Step 2:</strong> Multiply moles by molar mass.</p>
+            <p>$$2.0\text{ mol} \times 44.01\frac{\text{g}}{\text{mol}} = 88.02\text{ g}$$</p>
+            <p class="mt-2 font-semibold text-emerald-800">Answer: $88.02$ g CO<sub>2</sub></p>
+          </div>
+        </article>
+
+        <article class="problem-card transition-all duration-200 bg-white rounded-3xl shadow p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-emerald-700 font-semibold">Example 4</p>
+              <h3 class="text-xl font-bold mt-1">Grams → Moles</h3>
+            </div>
+            <button class="toggle-answer bg-emerald-700 text-white px-4 py-2 rounded-xl hover:bg-emerald-800" data-target="ans4">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many moles are in 36 g of H<sub>2</sub>O?</p>
+          <div id="ans4" class="answer-box mt-5 bg-emerald-50 rounded-2xl border border-emerald-200 p-5">
+            <p><strong>Step 1:</strong> Find molar mass of H<sub>2</sub>O.</p>
+            <p>$2(1.01) + 16.00 = 18.02\text{ g/mol}$</p>
+            <p class="mt-2"><strong>Step 2:</strong> Divide grams by molar mass.</p>
+            <p>$$\frac{36\text{ g}}{18.02\text{ g/mol}} = 2.00\text{ mol}$$</p>
+            <p class="mt-2 font-semibold text-emerald-800">Answer: $2.00$ moles H<sub>2</sub>O</p>
+          </div>
+        </article>
+
+        <article class="problem-card transition-all duration-200 bg-white rounded-3xl shadow p-6 border border-slate-200 lg:col-span-2">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-violet-700 font-semibold">Example 5</p>
+              <h3 class="text-xl font-bold mt-1">Grams → Particles</h3>
+            </div>
+            <button class="toggle-answer bg-violet-700 text-white px-4 py-2 rounded-xl hover:bg-violet-800" data-target="ans5">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many particles are in 44 g of CO<sub>2</sub>?</p>
+          <div id="ans5" class="answer-box mt-5 bg-violet-50 rounded-2xl border border-violet-200 p-5">
+            <p><strong>Step 1:</strong> Convert grams to moles.</p>
+            <p>$$\frac{44\text{ g}}{44.01\text{ g/mol}} \approx 1.0\text{ mol}$$</p>
+            <p><strong>Step 2:</strong> Convert moles to particles.</p>
+            <p>$$1.0\text{ mol} \times 6.022 \times 10^{23}\frac{\text{particles}}{\text{mol}} = 6.022 \times 10^{23}\text{ particles}$$</p>
+            <p class="mt-2 font-semibold text-violet-800">Answer: $6.022 \times 10^{23}$ particles</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="atom" class="bg-white rounded-3xl shadow p-6 md:p-8">
+      <h2 class="text-2xl font-bold mb-3">Specific Atoms in a Formula</h2>
+      <p class="text-slate-700 text-lg">To find a <strong>specific atom</strong> inside a compound, first find the number of molecules or formula units, then multiply by the subscript.</p>
+
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+          <h3 class="text-xl font-semibold mb-2">Key Idea</h3>
+          <p class="text-lg">In H<sub>2</sub>O:</p>
+          <ul class="mt-2 space-y-1 list-disc list-inside">
+            <li>2 hydrogen atoms per molecule</li>
+            <li>1 oxygen atom per molecule</li>
+          </ul>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+          <h3 class="text-xl font-semibold mb-2">Flow</h3>
+          <p class="text-lg">Grams → Moles → Molecules → Specific Atoms</p>
+          <p class="mt-2 text-slate-600">Always multiply by the subscript at the end.</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6 mt-6">
+        <article class="problem-card transition-all duration-200 bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-amber-700 font-semibold">Specific Atom Example 1</p>
+              <h3 class="text-xl font-bold mt-1">Moles → Atoms</h3>
+            </div>
+            <button class="toggle-answer bg-amber-600 text-white px-4 py-2 rounded-xl hover:bg-amber-700" data-target="ans6">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many <strong>hydrogen atoms</strong> are in 2.0 moles of H<sub>2</sub>O?</p>
+          <div id="ans6" class="answer-box mt-5 bg-white rounded-2xl border border-amber-200 p-5">
+            <p><strong>Step 1:</strong> Convert moles of H<sub>2</sub>O to molecules.</p>
+            <p>$$2.0\text{ mol} \times 6.022 \times 10^{23}\frac{\text{molecules}}{\text{mol}} = 1.204 \times 10^{24}\text{ molecules}$$</p>
+            <p><strong>Step 2:</strong> Use the formula ratio.</p>
+            <p>Each H<sub>2</sub>O molecule has <strong>2 H atoms</strong>.</p>
+            <p>$$1.204 \times 10^{24}\text{ molecules} \times \frac{2\text{ H atoms}}{1\text{ molecule}} = 2.408 \times 10^{24}\text{ H atoms}$$</p>
+            <p class="mt-2 font-semibold text-amber-800">Answer: $2.408 \times 10^{24}$ hydrogen atoms</p>
+          </div>
+        </article>
+
+        <article class="problem-card transition-all duration-200 bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-wide text-amber-700 font-semibold">Specific Atom Example 2</p>
+              <h3 class="text-xl font-bold mt-1">Grams → Specific Atoms</h3>
+            </div>
+            <button class="toggle-answer bg-amber-600 text-white px-4 py-2 rounded-xl hover:bg-amber-700" data-target="ans7">Show Solution</button>
+          </div>
+          <p class="mt-4 text-lg">How many <strong>oxygen atoms</strong> are in 88 g of CO<sub>2</sub>?</p>
+          <div id="ans7" class="answer-box mt-5 bg-white rounded-2xl border border-amber-200 p-5">
+            <p><strong>Step 1:</strong> Convert grams to moles.</p>
+            <p>$$\frac{88\text{ g}}{44.01\text{ g/mol}} \approx 2.0\text{ mol CO}_2$$</p>
+            <p><strong>Step 2:</strong> Convert moles to molecules.</p>
+            <p>$$2.0\text{ mol} \times 6.022 \times 10^{23}\frac{\text{molecules}}{\text{mol}} = 1.204 \times 10^{24}\text{ molecules}$$</p>
+            <p><strong>Step 3:</strong> Use the formula ratio.</p>
+            <p>Each CO<sub>2</sub> molecule has <strong>2 oxygen atoms</strong>.</p>
+            <p>$$1.204 \times 10^{24}\text{ molecules} \times \frac{2\text{ O atoms}}{1\text{ molecule}} = 2.408 \times 10^{24}\text{ O atoms}$$</p>
+            <p class="mt-2 font-semibold text-amber-800">Answer: $2.408 \times 10^{24}$ oxygen atoms</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="practice" class="bg-white rounded-3xl shadow p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">Practice Problems</h2>
+          <p class="text-slate-600 mt-1">Students try first, then reveal the answer and full work.</p>
+        </div>
+        <div class="text-sm text-slate-500">Tip: make students write the units in every step.</div>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-2 gap-6">
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 1</h3>
+          <p class="mt-3 text-lg">Convert $1.204 \times 10^{24}$ particles to moles.</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p1">Check Answer</button>
+          <div id="p1" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>$$1.204 \times 10^{24} \times \frac{1\text{ mol}}{6.022 \times 10^{23}} = 2.00\text{ mol}$$</p>
+            <p class="font-semibold mt-2">Answer: $2.00$ mol</p>
+          </div>
+        </article>
+
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 2</h3>
+          <p class="mt-3 text-lg">Convert 0.75 moles to particles.</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p2">Check Answer</button>
+          <div id="p2" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>$$0.75\text{ mol} \times 6.022 \times 10^{23}\frac{\text{particles}}{\text{mol}} = 4.52 \times 10^{23}\text{ particles}$$</p>
+            <p class="font-semibold mt-2">Answer: $4.52 \times 10^{23}$ particles</p>
+          </div>
+        </article>
+
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 3</h3>
+          <p class="mt-3 text-lg">Convert 3.5 moles of NaCl to grams.</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p3">Check Answer</button>
+          <div id="p3" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>Molar mass of NaCl:</p>
+            <p>$$22.99 + 35.45 = 58.44\text{ g/mol}$$</p>
+            <p>$$3.5\text{ mol} \times 58.44\frac{\text{g}}{\text{mol}} = 204.54\text{ g}$$</p>
+            <p class="font-semibold mt-2">Answer: $204.54$ g NaCl</p>
+          </div>
+        </article>
+
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 4</h3>
+          <p class="mt-3 text-lg">Convert 50 g of CO<sub>2</sub> to moles.</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p4">Check Answer</button>
+          <div id="p4" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>Molar mass of CO<sub>2</sub> = $44.01\text{ g/mol}$</p>
+            <p>$$\frac{50\text{ g}}{44.01\text{ g/mol}} = 1.14\text{ mol}$$</p>
+            <p class="font-semibold mt-2">Answer: $1.14$ mol CO<sub>2</sub></p>
+          </div>
+        </article>
+
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 5</h3>
+          <p class="mt-3 text-lg">How many particles are in 58.5 g NaCl?</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p5">Check Answer</button>
+          <div id="p5" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>Step 1: grams to moles</p>
+            <p>$$\frac{58.5\text{ g}}{58.44\text{ g/mol}} \approx 1.00\text{ mol}$$</p>
+            <p>Step 2: moles to particles</p>
+            <p>$$1.00\text{ mol} \times 6.022 \times 10^{23}\frac{\text{particles}}{\text{mol}} = 6.02 \times 10^{23}\text{ particles}$$</p>
+            <p class="font-semibold mt-2">Answer: $6.02 \times 10^{23}$ particles</p>
+          </div>
+        </article>
+
+        <article class="problem-card bg-slate-50 rounded-3xl p-6 border border-slate-200">
+          <h3 class="text-xl font-bold">Practice 6</h3>
+          <p class="mt-3 text-lg">How many chlorine atoms are in $6.022 \times 10^{23}$ formula units of CaCl<sub>2</sub>?</p>
+          <button class="toggle-answer mt-4 bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900" data-target="p6">Check Answer</button>
+          <div id="p6" class="answer-box mt-5 bg-white rounded-2xl border border-slate-200 p-5">
+            <p>Each CaCl<sub>2</sub> formula unit has 2 Cl atoms.</p>
+            <p>$$6.022 \times 10^{23}\text{ formula units} \times \frac{2\text{ Cl atoms}}{1\text{ formula unit}} = 1.204 \times 10^{24}\text{ Cl atoms}$$</p>
+            <p class="font-semibold mt-2">Answer: $1.204 \times 10^{24}$ chlorine atoms</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="bg-rose-50 border border-rose-200 rounded-3xl p-6 md:p-8">
+      <h2 class="text-2xl font-bold">Common Mistakes</h2>
+      <div class="mt-4 grid md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-2xl p-4 border border-rose-100">Forgetting to go through <strong>moles</strong></div>
+        <div class="bg-white rounded-2xl p-4 border border-rose-100">Using the wrong <strong>molar mass</strong></div>
+        <div class="bg-white rounded-2xl p-4 border border-rose-100">Mixing up <strong>molecules</strong> and <strong>atoms</strong></div>
+        <div class="bg-white rounded-2xl p-4 border border-rose-100">Forgetting to multiply by the <strong>subscript</strong> for specific atoms</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-200 mt-10">
+    <div class="max-w-7xl mx-auto px-6 py-6 text-sm flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <p>Mole Conversion Review Website</p>
+      <p>Built for Regular Chemistry</p>
+    </div>
+  </footer>
+
+  <script>
+    const buttons = document.querySelectorAll('.toggle-answer');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const target = document.getElementById(button.dataset.target);
+        target.classList.toggle('open');
+        button.textContent = target.classList.contains('open') ? 'Hide Solution' : 'Show Solution';
+        if (button.textContent === 'Show Solution' && button.closest('article')?.querySelector('h3')?.textContent?.includes('Practice')) {
+          button.textContent = target.classList.contains('open') ? 'Hide Answer' : 'Check Answer';
+        }
+        if (!target.classList.contains('open') && button.closest('article')?.querySelector('h3')?.textContent?.includes('Practice')) {
+          button.textContent = 'Check Answer';
+        }
+        if (target.classList.contains('open') && window.MathJax && window.MathJax.typesetPromise) {
+          window.MathJax.typesetPromise([target]);
+        }
+      });
+    });
+
+    if (window.MathJax && window.MathJax.typesetPromise) {
+      window.MathJax.typesetPromise();
+    }
+  </script>
+</body>
+</html>
