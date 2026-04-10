@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stoichiometry in the Real World Project</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Arial, Helvetica, sans-serif; }
+
+    .flip-card { perspective: 1000px; }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      transition: transform 0.7s;
+      transform-style: preserve-3d;
+    }
+    .flip-card:hover .flip-inner,
+    .flip-card:focus-within .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    .flip-back { transform: rotateY(180deg); }
+    .topic-chip {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.7);
+      margin-bottom: 0.75rem;
+      width: fit-content;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900">
+  <header class="bg-gradient-to-r from-emerald-700 to-teal-600 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-6 py-10">
+      <p class="uppercase tracking-[0.2em] text-sm text-emerald-100 font-semibold">Chemistry Project</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold mt-2">Stoichiometry in the Real World</h1>
+      <p class="mt-4 text-lg max-w-3xl text-emerald-50">
+        You have been grinding through moles and stoichiometry problems. Now it is time to show where this chemistry actually matters.
+        Your job is to investigate a real reaction, process, product, or event and explain the chemistry behind it.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="#mission" class="bg-white text-emerald-700 font-semibold px-5 py-3 rounded-xl shadow hover:bg-emerald-50">Start the Project</a>
+        <a href="#topics" class="bg-emerald-900/30 border border-white/30 text-white font-semibold px-5 py-3 rounded-xl hover:bg-emerald-900/40">See Topic Choices</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky top-0 z-20 bg-white border-b shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap gap-4 text-sm font-semibold text-slate-700">
+      <a href="#mission" class="hover:text-emerald-700">Mission</a>
+      <a href="#topics" class="hover:text-emerald-700">Topic Choices</a>
+      <a href="#requirements" class="hover:text-emerald-700">Requirements</a>
+      <a href="#timeline" class="hover:text-emerald-700">2-Day Plan</a>
+      <a href="#presentation" class="hover:text-emerald-700">Presentation Options</a>
+      <a href="#rubric" class="hover:text-emerald-700">Rubric</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-8 space-y-10">
+    <section id="mission" class="bg-white rounded-2xl shadow p-8">
+      <h2 class="text-3xl font-bold text-emerald-800">Your Mission</h2>
+      <p class="mt-4 text-lg leading-8">
+        Choose <strong>one chemistry topic</strong> connected to moles and stoichiometry. Research how the reaction works, why it matters, and how chemists use mole ratios to predict or control what happens.
+      </p>
+      <div class="mt-6 grid md:grid-cols-3 gap-4">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+          <h3 class="font-bold text-lg">Work Style</h3>
+          <p class="mt-2">This is an <strong>individual project</strong>. You are responsible for your own research, explanation, and presentation.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <h3 class="font-bold text-lg">Time Frame</h3>
+          <p class="mt-2">You will have <strong>2 class days</strong> to research, build, and prepare to present.</p>
+        </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4">
+          <h3 class="font-bold text-lg">Final Goal</h3>
+          <p class="mt-2">Teach the class how your topic connects to <strong>balanced equations, mole ratios, and real-life chemistry</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="topics" class="space-y-5">
+      <div>
+        <h2 class="text-3xl font-bold text-emerald-800">Interesting Topic Choices</h2>
+        <p class="mt-3 text-lg">Pick a topic that sounds dramatic, useful, surprising, or just plain interesting. Hover over a card to learn more.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-red-100 border-t-4 border-red-500">
+              <span class="topic-chip text-red-800">Safety</span>
+              <h3 class="text-xl font-bold">Airbags</h3>
+              <p class="mt-2 text-sm">A tiny packet causes a life-saving event in milliseconds.</p>
+            </div>
+            <div class="flip-back bg-red-200 border-t-4 border-red-600">
+              <h3 class="text-lg font-bold">Airbags</h3>
+              <p class="mt-2 text-sm leading-6">Explosive decomposition reactions rapidly produce gas to inflate airbags. Great for connecting mass of reactant to moles and gas produced.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-orange-100 border-t-4 border-orange-500">
+              <span class="topic-chip text-orange-800">Entertainment</span>
+              <h3 class="text-xl font-bold">Fireworks</h3>
+              <p class="mt-2 text-sm">Colors, sparks, and explosions all come from chemistry.</p>
+            </div>
+            <div class="flip-back bg-orange-200 border-t-4 border-orange-600">
+              <h3 class="text-lg font-bold">Fireworks</h3>
+              <p class="mt-2 text-sm leading-6">Combustion and metal salts create bright colors and bursts. Good for linking chemical compounds, products, and controlled reaction amounts.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-yellow-100 border-t-4 border-yellow-500">
+              <span class="topic-chip text-yellow-800">Engineering</span>
+              <h3 class="text-xl font-bold">Rocket Fuel</h3>
+              <p class="mt-2 text-sm">The right chemical ratio can launch a machine into space.</p>
+            </div>
+            <div class="flip-back bg-yellow-200 border-t-4 border-yellow-600">
+              <h3 class="text-lg font-bold">Rocket Fuel</h3>
+              <p class="mt-2 text-sm leading-6">Fuel and oxidizer ratios determine thrust and efficiency. A strong topic for mole ratios and limiting reactants in real engineering.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-green-100 border-t-4 border-green-500">
+              <span class="topic-chip text-green-800">Health</span>
+              <h3 class="text-xl font-bold">Antacids</h3>
+              <p class="mt-2 text-sm">A small tablet can neutralize stomach acid.</p>
+            </div>
+            <div class="flip-back bg-green-200 border-t-4 border-green-600">
+              <h3 class="text-lg font-bold">Antacids</h3>
+              <p class="mt-2 text-sm leading-6">Neutralization reactions reduce acid in the stomach. Great for showing how many moles of acid one dose can handle.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-teal-100 border-t-4 border-teal-500">
+              <span class="topic-chip text-teal-800">Biology</span>
+              <h3 class="text-xl font-bold">Photosynthesis</h3>
+              <p class="mt-2 text-sm">Plants build glucose from water and carbon dioxide.</p>
+            </div>
+            <div class="flip-back bg-teal-200 border-t-4 border-teal-600">
+              <h3 class="text-lg font-bold">Photosynthesis</h3>
+              <p class="mt-2 text-sm leading-6">Plants convert CO₂ and water into glucose using light energy. This topic links stoichiometry to life on Earth and energy storage.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-cyan-100 border-t-4 border-cyan-500">
+              <span class="topic-chip text-cyan-800">Technology</span>
+              <h3 class="text-xl font-bold">Hydrogen Fuel Cells</h3>
+              <p class="mt-2 text-sm">A chemical reaction can make electricity with water as a product.</p>
+            </div>
+            <div class="flip-back bg-cyan-200 border-t-4 border-cyan-600">
+              <h3 class="text-lg font-bold">Hydrogen Fuel Cells</h3>
+              <p class="mt-2 text-sm leading-6">Hydrogen reacts with oxygen to produce electricity and water. A modern topic that fits cleanly with balanced equations and mass relationships.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-blue-100 border-t-4 border-blue-500">
+              <span class="topic-chip text-blue-800">Materials</span>
+              <h3 class="text-xl font-bold">Rusting</h3>
+              <p class="mt-2 text-sm">A slow reaction can destroy metal over time.</p>
+            </div>
+            <div class="flip-back bg-blue-200 border-t-4 border-blue-600">
+              <h3 class="text-lg font-bold">Rusting</h3>
+              <p class="mt-2 text-sm leading-6">Oxidation reactions slowly corrode metals. Strong for connecting reactants in the air to mass gain and material damage.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-indigo-100 border-t-4 border-indigo-500">
+              <span class="topic-chip text-indigo-800">Food</span>
+              <h3 class="text-xl font-bold">Baking Chemistry</h3>
+              <p class="mt-2 text-sm">Gas-producing reactions make baked goods rise.</p>
+            </div>
+            <div class="flip-back bg-indigo-200 border-t-4 border-indigo-600">
+              <h3 class="text-lg font-bold">Baking Chemistry</h3>
+              <p class="mt-2 text-sm leading-6">Baking soda and baking powder create carbon dioxide gas. This topic is familiar, practical, and easy to turn into a clear stoichiometry example.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-violet-100 border-t-4 border-violet-500">
+              <span class="topic-chip text-violet-800">Industry</span>
+              <h3 class="text-xl font-bold">Haber Process</h3>
+              <p class="mt-2 text-sm">Industrial chemistry helps feed the world.</p>
+            </div>
+            <div class="flip-back bg-violet-200 border-t-4 border-violet-600">
+              <h3 class="text-lg font-bold">Haber Process</h3>
+              <p class="mt-2 text-sm leading-6">Ammonia production from nitrogen and hydrogen supports fertilizer production worldwide. Great for showing chemistry at massive scale.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-pink-100 border-t-4 border-pink-500">
+              <span class="topic-chip text-pink-800">Everyday Use</span>
+              <h3 class="text-xl font-bold">Hand Warmers</h3>
+              <p class="mt-2 text-sm">A packet in your glove can release noticeable heat.</p>
+            </div>
+            <div class="flip-back bg-pink-200 border-t-4 border-pink-600">
+              <h3 class="text-lg font-bold">Hand Warmers</h3>
+              <p class="mt-2 text-sm leading-6">Exothermic reactions such as iron oxidation release heat. A nice choice for students who want a simple but real application.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-rose-100 border-t-4 border-rose-500">
+              <span class="topic-chip text-rose-800">Everyday Use</span>
+              <h3 class="text-xl font-bold">Chemical Ice Packs</h3>
+              <p class="mt-2 text-sm">Some reactions absorb heat and get cold fast.</p>
+            </div>
+            <div class="flip-back bg-rose-200 border-t-4 border-rose-600">
+              <h3 class="text-lg font-bold">Chemical Ice Packs</h3>
+              <p class="mt-2 text-sm leading-6">Endothermic processes absorb energy from the surroundings. This gives students a chance to connect chemistry to sports medicine and first aid.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-slate-100 border-t-4 border-slate-500">
+              <span class="topic-chip text-slate-800">Earth Science</span>
+              <h3 class="text-xl font-bold">Calcium Carbonate</h3>
+              <p class="mt-2 text-sm">This common compound shows up in shells, chalk, and limestone.</p>
+            </div>
+            <div class="flip-back bg-slate-200 border-t-4 border-slate-600">
+              <h3 class="text-lg font-bold">Calcium Carbonate</h3>
+              <p class="mt-2 text-sm leading-6">It reacts with acids and appears in natural materials all around us. A good bridge between chemistry, geology, and everyday materials.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-lime-100 border-t-4 border-lime-500">
+              <span class="topic-chip text-lime-800">Environment</span>
+              <h3 class="text-xl font-bold">Acid Rain</h3>
+              <p class="mt-2 text-sm">Pollution can turn into damaging acids in the atmosphere.</p>
+            </div>
+            <div class="flip-back bg-lime-200 border-t-4 border-lime-600">
+              <h3 class="text-lg font-bold">Acid Rain</h3>
+              <p class="mt-2 text-sm leading-6">Atmospheric reactions form sulfuric and nitric acids that damage ecosystems and buildings. Strong environmental relevance.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-amber-100 border-t-4 border-amber-500">
+              <span class="topic-chip text-amber-800">Transportation</span>
+              <h3 class="text-xl font-bold">Combustion Engines</h3>
+              <p class="mt-2 text-sm">Cars depend on the right fuel and oxygen balance.</p>
+            </div>
+            <div class="flip-back bg-amber-200 border-t-4 border-amber-600">
+              <h3 class="text-lg font-bold">Combustion Engines</h3>
+              <p class="mt-2 text-sm leading-6">Fuel-air ratios influence how efficiently engines work. A familiar application that ties directly to balanced combustion equations.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-emerald-100 border-t-4 border-emerald-500">
+              <span class="topic-chip text-emerald-800">Lab Chemistry</span>
+              <h3 class="text-xl font-bold">Electrolysis</h3>
+              <p class="mt-2 text-sm">Electricity can break compounds apart.</p>
+            </div>
+            <div class="flip-back bg-emerald-200 border-t-4 border-emerald-600">
+              <h3 class="text-lg font-bold">Electrolysis</h3>
+              <p class="mt-2 text-sm leading-6">Electric current splits compounds like water into smaller substances. This blends chemistry, energy, and real industrial uses.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" tabindex="0">
+          <div class="flip-inner">
+            <div class="flip-front bg-gray-200 border-t-4 border-gray-500">
+              <span class="topic-chip text-gray-800">Medicine / Lab</span>
+              <h3 class="text-xl font-bold">Hydrogen Peroxide</h3>
+              <p class="mt-2 text-sm">A familiar liquid can break down and release oxygen gas.</p>
+            </div>
+            <div class="flip-back bg-gray-300 border-t-4 border-gray-600">
+              <h3 class="text-lg font-bold">Hydrogen Peroxide</h3>
+              <p class="mt-2 text-sm leading-6">Decomposition reactions release oxygen and are used in cleaning and lab demonstrations. Very approachable for students who want a clear equation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-amber-400">
+        <h3 class="text-xl font-bold">Want a different topic?</h3>
+        <p class="mt-2">You may propose your own topic if it clearly connects to a <strong>balanced chemical equation</strong>, <strong>moles</strong>, and <strong>stoichiometry</strong>.</p>
+      </div>
+    </section>
+
+    <section id="requirements" class="bg-white rounded-2xl shadow p-8">
+      <h2 class="text-3xl font-bold text-emerald-800">What Your Project Must Include</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-5">
+        <div class="bg-slate-50 rounded-xl p-5 border">
+          <h3 class="font-bold text-lg">1. Topic Explanation</h3>
+          <p class="mt-2">Explain what your topic is and where it appears in real life.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-5 border">
+          <h3 class="font-bold text-lg">2. Balanced Chemical Equation</h3>
+          <p class="mt-2">Include at least one correct balanced equation connected to your topic.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-5 border">
+          <h3 class="font-bold text-lg">3. Mole Ratio / Stoichiometry Connection</h3>
+          <p class="mt-2">Explain how chemists use mole ratios to predict or control the amounts of substances involved.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-5 border">
+          <h3 class="font-bold text-lg">4. One Sample Calculation</h3>
+          <p class="mt-2">Show one stoichiometry calculation related to your topic. Work must be shown clearly.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-5 border md:col-span-2">
+          <h3 class="font-bold text-lg">5. Why It Matters</h3>
+          <p class="mt-2">Explain why this chemistry matters in everyday life, medicine, engineering, the environment, industry, food, safety, or technology.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline" class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl shadow p-8">
+      <h2 class="text-3xl font-bold">2-Day Timeline</h2>
+      <div class="mt-6 grid md:grid-cols-2 gap-6">
+        <div class="bg-white/10 rounded-xl p-6 border border-white/10">
+          <h3 class="text-2xl font-bold text-emerald-300">Day 1: Research + Build</h3>
+          <ul class="mt-4 space-y-3 list-disc list-inside text-slate-100 leading-7">
+            <li>Choose your topic.</li>
+            <li>Find a balanced equation connected to it.</li>
+            <li>Research how the reaction works in real life.</li>
+            <li>Write down your mole ratio explanation.</li>
+            <li>Start your visual or presentation format.</li>
+          </ul>
+        </div>
+        <div class="bg-white/10 rounded-xl p-6 border border-white/10">
+          <h3 class="text-2xl font-bold text-amber-300">Day 2: Finish + Present</h3>
+          <ul class="mt-4 space-y-3 list-disc list-inside text-slate-100 leading-7">
+            <li>Complete your sample stoichiometry calculation.</li>
+            <li>Make your explanation clear and polished.</li>
+            <li>Practice presenting your chemistry.</li>
+            <li>Present in the format you choose.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="presentation" class="bg-white rounded-2xl shadow p-8">
+      <h2 class="text-3xl font-bold text-emerald-800">Present It However You Want</h2>
+      <p class="mt-3 text-lg">You will present your chemistry topic, but you may decide how to do it. Pick a format that lets you explain your ideas clearly.</p>
+      <div class="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">Mini Slides</h3>
+          <p class="mt-2">Create 3 to 5 slides and explain your chemistry to the class.</p>
+        </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">Poster or Infographic</h3>
+          <p class="mt-2">Design a visual display and talk through it.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">Recorded Video</h3>
+          <p class="mt-2">Record yourself explaining the chemistry and submit the video.</p>
+        </div>
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">Demonstration Style</h3>
+          <p class="mt-2">Use props, drawings, or a model while you explain your topic.</p>
+        </div>
+        <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">One-Page Visual Report</h3>
+          <p class="mt-2">Create a polished one-page document and present the main ideas.</p>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <h3 class="font-bold text-lg">Teacher-Approved Format</h3>
+          <p class="mt-2">Have another idea? Get it approved and make it work.</p>
+        </div>
+      </div>
+      <div class="mt-6 bg-slate-100 rounded-xl p-5 border-l-4 border-emerald-600">
+        <p><strong>Important:</strong> The format is your choice, but the chemistry still has to be accurate, clear, and complete.</p>
+      </div>
+    </section>
+
+    <section id="rubric" class="bg-white rounded-2xl shadow p-8">
+      <h2 class="text-3xl font-bold text-emerald-800">Project Rubric</h2>
+      <div class="overflow-x-auto mt-6">
+        <table class="w-full border-collapse text-left">
+          <thead>
+            <tr class="bg-emerald-700 text-white">
+              <th class="p-4">Category</th>
+              <th class="p-4">Points</th>
+              <th class="p-4">What It Means</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b bg-white">
+              <td class="p-4 font-semibold">Chemistry Accuracy</td>
+              <td class="p-4">5</td>
+              <td class="p-4">Your information, equation, and explanation are scientifically correct.</td>
+            </tr>
+            <tr class="border-b bg-slate-50">
+              <td class="p-4 font-semibold">Balanced Equation</td>
+              <td class="p-4">4</td>
+              <td class="p-4">A correct balanced chemical equation is included and connected to the topic.</td>
+            </tr>
+            <tr class="border-b bg-white">
+              <td class="p-4 font-semibold">Stoichiometry Connection</td>
+              <td class="p-4">4</td>
+              <td class="p-4">You clearly explain the mole ratio or stoichiometry idea behind the reaction.</td>
+            </tr>
+            <tr class="border-b bg-slate-50">
+              <td class="p-4 font-semibold">Sample Calculation</td>
+              <td class="p-4">4</td>
+              <td class="p-4">You show one worked stoichiometry problem connected to your topic.</td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-4 font-semibold">Presentation Quality</td>
+              <td class="p-4">3</td>
+              <td class="p-4">Your work is organized, clear, and easy for others to understand.</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="bg-emerald-100 font-bold">
+              <td class="p-4">Total</td>
+              <td class="p-4">20</td>
+              <td class="p-4">A strong project teaches the chemistry clearly.</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-12 bg-slate-900 text-slate-300">
+    <div class="max-w-6xl mx-auto px-6 py-8 text-sm flex flex-col md:flex-row justify-between gap-3">
+      <p>Stoichiometry in the Real World Project</p>
+      <p>Designed for high school chemistry</p>
+    </div>
+  </footer>
+</body>
+</html>
